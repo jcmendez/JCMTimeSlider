@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6494BEC619D9079300D9019E /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6494BEC519D9079300D9019E /* MapKit.framework */; };
 		64EE471F19D30B0B0010BDD0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64EE471E19D30B0B0010BDD0 /* AppDelegate.swift */; };
 		64EE472119D30B0B0010BDD0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64EE472019D30B0B0010BDD0 /* ViewController.swift */; };
 		64EE472419D30B0B0010BDD0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 64EE472219D30B0B0010BDD0 /* Main.storyboard */; };
@@ -27,6 +28,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6494BEC519D9079300D9019E /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		64EE471919D30B0B0010BDD0 /* TimeSlider.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TimeSlider.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		64EE471D19D30B0B0010BDD0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		64EE471E19D30B0B0010BDD0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -45,6 +47,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6494BEC619D9079300D9019E /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,6 +64,7 @@
 		64EE471019D30B0B0010BDD0 = {
 			isa = PBXGroup;
 			children = (
+				6494BEC519D9079300D9019E /* MapKit.framework */,
 				64EE471B19D30B0B0010BDD0 /* TimeSlider */,
 				64EE473119D30B0B0010BDD0 /* TimeSliderTests */,
 				64EE471A19D30B0B0010BDD0 /* Products */,
@@ -164,6 +168,11 @@
 				TargetAttributes = {
 					64EE471819D30B0B0010BDD0 = {
 						CreatedOnToolsVersion = 6.0;
+						SystemCapabilities = {
+							com.apple.Maps.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 					64EE472D19D30B0B0010BDD0 = {
 						CreatedOnToolsVersion = 6.0;

@@ -17,6 +17,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="satellite" zoomEnabled="NO" rotateEnabled="NO" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8Nf-l8-IOk">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                            </mapView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7Jb-xS-dMF" customClass="JCMTimeSliderControl" customModule="TimeSlider" customModuleProvider="target">
                                 <rect key="frame" x="538" y="40" width="36" height="520"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
@@ -65,15 +68,19 @@
                             <constraint firstAttribute="trailingMargin" secondItem="7Jb-xS-dMF" secondAttribute="trailing" constant="10" id="A8m-gX-W5S"/>
                             <constraint firstItem="7Jb-xS-dMF" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="topMargin" constant="40" id="BAe-RD-J5U"/>
                             <constraint firstItem="TOB-EU-jqO" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="20" id="H2r-As-kbd"/>
+                            <constraint firstItem="8Nf-l8-IOk" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="topMargin" id="H4T-Ne-gWy"/>
                             <constraint firstItem="aBN-gp-JVf" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="20" id="Jjg-L7-bGs"/>
                             <constraint firstItem="osd-Zd-Q3G" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="20" id="LbK-KV-ku7"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="TOB-EU-jqO" secondAttribute="bottom" constant="40" id="QGY-oV-oFR"/>
+                            <constraint firstItem="8Nf-l8-IOk" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="Qgs-87-9Z3"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="7Jb-xS-dMF" secondAttribute="bottom" constant="40" id="QoN-5Y-ViE"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="osd-Zd-Q3G" secondAttribute="bottom" constant="40" id="TQK-ze-7tV"/>
                             <constraint firstAttribute="trailingMargin" secondItem="aBN-gp-JVf" secondAttribute="trailing" constant="170" id="fvV-6M-tCi"/>
+                            <constraint firstItem="8Nf-l8-IOk" firstAttribute="bottom" secondItem="8bC-Xf-vdC" secondAttribute="bottomMargin" id="gFa-u4-FBu"/>
                             <constraint firstAttribute="bottomMargin" secondItem="7Jb-xS-dMF" secondAttribute="bottom" constant="40" id="kvH-L0-r9i"/>
                             <constraint firstItem="7Jb-xS-dMF" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="20" id="lOb-Xd-c7J"/>
                             <constraint firstAttribute="trailingMargin" secondItem="osd-Zd-Q3G" secondAttribute="trailing" constant="90" id="oq3-9v-RMw"/>
+                            <constraint firstAttribute="trailing" secondItem="8Nf-l8-IOk" secondAttribute="trailing" id="pbV-Ko-gFX"/>
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">

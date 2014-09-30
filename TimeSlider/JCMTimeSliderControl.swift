@@ -47,6 +47,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
     super.init(coder: aDecoder)
     clipsToBounds = true
     snapAnimUIDynamicAnimator = UIDynamicAnimator(referenceView: self)
+    snapAnimUIDynamicAnimator!.delegate = self
     dataSource = self
   }
 
@@ -63,16 +64,31 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   *  for our selected tick
   */
   internal class DynamicTick : NSObject, UIDynamicItem {
-    var center: CGPoint
+    var tick: CAShapeLayer
+    var labels: [CATextLayer]
+    var center: CGPoint {
+      get {
+        return CGPoint(x: tick.frame.midX, y: tick.frame.midY)
+      }
+      set {
+        let w = tick.frame.width
+        let h = tick.frame.height
+        let xx = newValue.x - w/2.0
+        let yy = newValue.y - h/2.0
+        let newFrame = CGRect(x: xx, y: yy, width: w, height: h)
+        tick.frame = newFrame
+      }
+    }
     var bounds: CGRect {
       get {
-        return CGRectZero
+        return tick.bounds
       }
     }
     var transform: CGAffineTransform
     
-    init(center: CGPoint) {
-      self.center = center
+    init(tick: CAShapeLayer, labels: [CATextLayer]) {
+      self.tick = tick
+      self.labels = labels
       self.transform = CGAffineTransformIdentity
       super.init()
     }
@@ -117,7 +133,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
         } else {
           widthConstraint?.constant *= 0.5
         }
-        layoutIfNeeded()
+        setNeedsLayout()
       }
     }
   }
@@ -125,7 +141,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   @IBOutlet var widthConstraint: NSLayoutConstraint?
   
   /// The color of the inactive ticks
-  var inactiveTickColor: UIColor = UIColor.whiteColor().colorWithAlphaComponent(0.5)
+  var inactiveTickColor: UIColor = UIColor.whiteColor().colorWithAlphaComponent(0.2)
   
   /// The color of the selected tick
   var selectedTickColor: UIColor = UIColor.whiteColor()
@@ -166,6 +182,8 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   /// Layer for the labels
   private var labelsLayer : CALayer?
   
+  private var centerTick : DynamicTick?
+  
   /// Flag to determine whether to expand horizontally
   private var expansionChangeNeeded : Bool
   
@@ -188,7 +206,12 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
           DISPATCH_TIME_NOW,
           Int64(Double(stc) * Double(NSEC_PER_SEC))
         ),
-        dispatch_get_main_queue(), { self.expanded = false })
+        dispatch_get_main_queue(), {
+          CATransaction.begin()
+          CATransaction.setValue(kCFBooleanTrue, forKey: kCATransactionDisableActions)
+          self.expanded = false
+          CATransaction.commit()
+      })
     } else {
       self.expanded = false
     }
@@ -296,15 +319,6 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
     let hypoDate = linearDateFrom(offset)
     lastSelectedIndex = findNearestDate(hypoDate)
     
-    // Prepare the snapping animation to the selected date
-//    let snapPointY = distortedYOffsetFrom(dateAtIndex(lastSelectedIndex!), index: lastSelectedIndex!)
-//    let snapPoint = CGPoint(x: 0,y: snapPointY)
-//    let snap = UISnapBehavior(item: DynamicTick(center: point), snapToPoint: snapPoint)
-//    snap.damping = 0.1
-//    snap.action = {
-//      self.updateTicksAndLabels()
-//    }
-//    snapAnimUIDynamicAnimator?.addBehavior(snap)
     updateTicksAndLabels()
     
     println("Off: \(offset) -> Date: \(hypoDate), loc: \(lastSelectedIndex)")
@@ -321,9 +335,27 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   }
   
   override func endTrackingWithTouch(touch: UITouch, withEvent event: UIEvent) {
-    // Not much to do for now
     super.endTrackingWithTouch(touch, withEvent: event)
-    closeLater()
+    // Prepare the snapping animation to the selected date
+    let point = touch.locationInView(self)
+
+    let snapPointY = distortedYOffsetFrom(dataSource!.dateAtIndex(lastSelectedIndex!), index: lastSelectedIndex!)
+    if let sublayers = ticksLayer?.sublayers {
+      let t = sublayers[lastSelectedIndex!] as CAShapeLayer
+      let labels = labelsLayer!.sublayers as [CATextLayer]
+
+      t.frame.offset(dx: 0, dy: linearExpansionStep)
+      centerTick = DynamicTick(tick: t, labels:labels)
+      let snapPoint = CGPoint(x: t.frame.midX,y: snapPointY)
+      let snap = UISnapBehavior(item: centerTick!, snapToPoint: snapPoint)
+      snap.damping = 0.1
+      snap.action = {
+        println("Snapping")
+      }
+      snapAnimUIDynamicAnimator?.addBehavior(snap)
+    } else {
+      closeLater()
+    }
   }
   
   func firstDate() -> NSDate? {
@@ -601,7 +633,13 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
         var offset = distortedYOffsetFrom(dataSource!.dateAtIndex(i), index: i)
         switch indexToKind(i) {
         case .LinearMiddle:
-          tick.strokeColor = UIColor.greenColor().CGColor
+          if (offset < breakPoints[.Earliest]!.y) ||
+            (offset > breakPoints[.Latest]!.y) {
+              tick.strokeColor = UIColor.clearColor().CGColor
+          } else {
+            let indexDifference = abs(lastSelectedIndex! - i)
+            tick.strokeColor = selectedTickColor.colorWithAlphaComponent(1.0-0.5*CGFloat(indexDifference)/CGFloat(linearExpansionRange)).CGColor
+          }
         case .FloatRight, .FloatLeft:
           tick.strokeColor = inactiveTickColor.CGColor
         case .Anchored:
@@ -640,7 +678,6 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
               tick.transform = selectedTransform
               tick.strokeColor = selectedTickColor.CGColor
               tick.lineWidth = 3.0
-              //tick.strokeColor = selectedTickColor.CGColor
               
               if expanded {
                 let label = labelsLayer?.sublayers[BreakPoint.Selected.toRaw()] as CATextLayer
@@ -654,14 +691,15 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
               // Draw the accessory ticks that visually highlight the expanded range
               if (expanded) {
                 tick.transform = CATransform3DMakeTranslation(-2.0*CGFloat(linearExpansionRange-indexDifference), 0.0, 0.0)
-                //tick.strokeColor = selectedTickColor.colorWithAlphaComponent(1.0-0.5*CGFloat(indexDifference)/CGFloat(linearExpansionRange)).CGColor
               }
               
               if expanded && (indexDifference == linearExpansionRange - 1) {
                 let labelID = (i > lastSelectedIndex) ? BreakPoint.LastDistorted : BreakPoint.FirstDistorted
                 let label = labelsLayer?.sublayers[labelID.toRaw()] as CATextLayer
-                label.position = CGPoint(x: 0, y: offset + fontOffset)
+                
                 label.opacity = 0.3
+                label.position = CGPoint(x: 0, y: offset + fontOffset)
+
                 let date = dataSource!.dateAtIndex(i)
                 label.string = JCMTimeSliderControl.selectedDateFormatter.stringFromDate(date)
               }
@@ -670,6 +708,14 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
         }
         
         tick.position = CGPoint(x: (expanded ? 36.0 : 0.0), y: offset)
+        
+        // Hide any labels out of bounds
+        for label in labelsLayer!.sublayers as [CATextLayer] {
+          if (label.position.y < breakPoints[.Earliest]!.y) ||
+             (label.position.y > breakPoints[.Latest]!.y) {
+            label.opacity = 0.0
+          }
+        }
       }
       CATransaction.commit()
     }
@@ -687,7 +733,9 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
 
   func dynamicAnimatorDidPause(animator: UIDynamicAnimator) {
     if animator == snapAnimUIDynamicAnimator? {
+      println("Snapped")
       animator.removeAllBehaviors()
+      self.expanded = false
     }
   }
   // MARK - Methods to be our own data source

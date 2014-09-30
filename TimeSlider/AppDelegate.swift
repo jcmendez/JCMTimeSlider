@@ -27,14 +27,17 @@
 //  THE SOFTWARE.
 
 import UIKit
+import MapKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var window: UIWindow?
+  var locationManager = CLLocationManager()
 
 
   func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    locationManager.requestAlwaysAuthorization()
     // Override point for customization after application launch.
     return true
   }
