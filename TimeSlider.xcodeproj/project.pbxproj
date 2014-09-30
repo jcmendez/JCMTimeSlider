@@ -6,6 +6,20 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		643E07B319DA2C9700D324B2 /* Documentation */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 643E07B619DA2C9700D324B2 /* Build configuration list for PBXAggregateTarget "Documentation" */;
+			buildPhases = (
+				643E07B719DA2CA300D324B2 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = Documentation;
+			productName = Documentation;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		6494BEC619D9079300D9019E /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6494BEC519D9079300D9019E /* MapKit.framework */; };
 		64EE471F19D30B0B0010BDD0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64EE471E19D30B0B0010BDD0 /* AppDelegate.swift */; };
@@ -166,6 +180,9 @@
 				LastUpgradeCheck = 0600;
 				ORGANIZATIONNAME = BG4US;
 				TargetAttributes = {
+					643E07B319DA2C9700D324B2 = {
+						CreatedOnToolsVersion = 6.0;
+					};
 					64EE471819D30B0B0010BDD0 = {
 						CreatedOnToolsVersion = 6.0;
 						SystemCapabilities = {
@@ -195,6 +212,7 @@
 			targets = (
 				64EE471819D30B0B0010BDD0 /* TimeSlider */,
 				64EE472D19D30B0B0010BDD0 /* TimeSliderTests */,
+				643E07B319DA2C9700D324B2 /* Documentation */,
 			);
 		};
 /* End PBXProject section */
@@ -218,6 +236,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		643E07B719DA2CA300D324B2 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "company=\"BG4US\";\ncompanyID=\"com.bg4us\";\ncompanyURL=\"http://bg4us.com\";\ntarget=\"iphoneos\";\n#target=\"macosx\";\noutputPath=\"~/help\";\n# End constants\n/usr/local/bin/appledoc \\\n--project-name \"${PROJECT_NAME}\" \\\n--project-company \"${company}\" \\\n--company-id \"${companyID}\" \\\n--docset-atom-filename \"${company}.atom\" \\\n--docset-feed-url \"${companyURL}/${company}/%DOCSETATOMFILENAME\" \\\n--docset-package-url \"${companyURL}/${company}/%DOCSETPACKAGEFILENAME\" \\\n--docset-fallback-url \"${companyURL}/${company}\" \\\n--output \"${outputPath}\" \\\n--publish-docset \\\n--docset-platform-family \"${target}\" \\\n--logformat xcode \\\n--keep-intermediate-files \\\n--no-repeat-first-par \\\n--no-warn-invalid-crossref \\\n--exit-threshold 2 \\\n\"${PROJECT_DIR}\"";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		64EE471519D30B0B0010BDD0 /* Sources */ = {
@@ -268,6 +302,20 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		643E07B419DA2C9700D324B2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		643E07B519DA2C9700D324B2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		64EE473619D30B0B0010BDD0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -404,6 +452,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		643E07B619DA2C9700D324B2 /* Build configuration list for PBXAggregateTarget "Documentation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				643E07B419DA2C9700D324B2 /* Debug */,
+				643E07B519DA2C9700D324B2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		64EE471419D30B0B0010BDD0 /* Build configuration list for PBXProject "TimeSlider" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
