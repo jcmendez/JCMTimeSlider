@@ -349,6 +349,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
       let snapPoint = CGPoint(x: t.frame.midX,y: snapPointY)
       let snap = UISnapBehavior(item: centerTick!, snapToPoint: snapPoint)
       snap.damping = 0.1
+      self.userInteractionEnabled = false
       snap.action = {
         println("Snapping")
       }
@@ -735,6 +736,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
     if animator == snapAnimUIDynamicAnimator? {
       println("Snapped")
       animator.removeAllBehaviors()
+      self.userInteractionEnabled = true
       self.expanded = false
     }
   }
