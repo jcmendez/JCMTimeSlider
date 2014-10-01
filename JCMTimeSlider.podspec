@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
                    DESC
 
   s.homepage     = "https://github.com/jcmendez/JCMTimeSlider"
-  # s.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
+  s.screenshots  = "http://jcmendez.github.io/JCMTimeSlider/images/sample.gif"
 
 
   # ―――  Spec License  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
