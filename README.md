@@ -3,6 +3,8 @@ JCMTimeSlider
 
 This is an iOS control to navigate a timeline with large number of data points (dates)
 
+![JCMTimeSlider in action](http://jcmendez.github.io/JCMTimeSlider/images/sample.gif)
+
 Usage
 =====
 
