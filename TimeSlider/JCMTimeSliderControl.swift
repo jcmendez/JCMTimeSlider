@@ -38,6 +38,11 @@ protocol JCMTimeSliderControlDataSource {
   func dateAtIndex(index: Int) -> NSDate
 }
 
+@objc protocol JCMTimeSliderControlDelegate {
+  optional func selectedDate(date:NSDate, index:Int, control:JCMTimeSliderControl)
+  optional func hoveredOverDate(date:NSDate, index:Int, control:JCMTimeSliderControl)
+}
+
 class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderControlDataSource {
 
   required init(coder aDecoder: NSCoder) {
@@ -117,6 +122,9 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   
   var breakPoints = Dictionary<BreakPoint,TimeMappingPoint>()
   
+  /// Delegate
+  var delegate: JCMTimeSliderControlDelegate?
+  
   /// Is in expanded form?
   var expanded: Bool {
     willSet {
@@ -139,7 +147,10 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   }
   
   @IBOutlet var widthConstraint: NSLayoutConstraint?
-  
+
+  /// The color of the labels
+  var labelColor: UIColor = UIColor.whiteColor().colorWithAlphaComponent(0.2)
+
   /// The color of the inactive ticks
   var inactiveTickColor: UIColor = UIColor.whiteColor().colorWithAlphaComponent(0.2)
   
@@ -200,6 +211,11 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   Closes the control after a second
   */
   func closeLater() {
+    if let lsi = lastSelectedIndex? {
+      let date = dataSource!.dateAtIndex(lsi)
+      delegate?.selectedDate?(date, index:lastSelectedIndex!, control:self)
+    }
+
     if let stc = secondsToClose {
       dispatch_after(
         dispatch_time(
@@ -321,7 +337,8 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
     
     updateTicksAndLabels()
     
-    println("Off: \(offset) -> Date: \(hypoDate), loc: \(lastSelectedIndex)")
+    delegate?.hoveredOverDate?(hypoDate, index: lastSelectedIndex!, control:self)
+    
     let keepGoing = allowTrackOutsideControl ? true : inBounds
     if !keepGoing {
       closeLater()
@@ -623,6 +640,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
       // Assume labels won't be visible, to start with
       for label in labelsLayer!.sublayers as [CATextLayer] {
         label.opacity = 0.0
+        label.foregroundColor = labelColor.CGColor
       }
       
       // Process each tick

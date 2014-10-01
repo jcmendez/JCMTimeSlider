@@ -61,7 +61,7 @@ class SampleData: JCMTimeSliderControlDataSource {
 
 }
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, JCMTimeSliderControlDelegate {
 
   @IBOutlet var timeControl1: JCMTimeSliderControl?
   @IBOutlet var timeControl2: JCMTimeSliderControl?
@@ -71,25 +71,47 @@ class ViewController: UIViewController {
   var sample1 = SampleData(points: 4)
   var sample2 = SampleData(points: 12)
   var sample3 = SampleData(points: 100)
-  var sample4 = SampleData(points: 4000)
+  var sample4 = SampleData(points: 800)
   
   
   override func viewDidLoad() {
     super.viewDidLoad()
     timeControl1?.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.4)
     timeControl1?.dataSource = sample1
-    timeControl2?.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.4)
+    timeControl1?.delegate = self
+    timeControl1?.tag = 1
+    
+    timeControl2?.backgroundColor = UIColor.whiteColor().colorWithAlphaComponent(0.4)
+    timeControl2?.selectedTickColor = UIColor.blackColor()
+    timeControl2?.labelColor = UIColor.blackColor()
+    timeControl2?.inactiveTickColor = UIColor.blackColor().colorWithAlphaComponent(0.2)
     timeControl2?.dataSource = sample2
+    timeControl2?.delegate = self
+    timeControl2?.tag = 2
+    
     timeControl3?.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.4)
     timeControl3?.dataSource = sample3
+    timeControl3?.delegate = self
+    timeControl3?.tag = 3
+
     timeControl4?.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.4)
     timeControl4?.dataSource = sample4
-    // Do any additional setup after loading the view, typically from a nib.
+    timeControl4?.delegate = self
+    timeControl4?.tag = 4
+
   }
 
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
+  }
+  
+  func hoveredOverDate(date: NSDate, index: Int, control: JCMTimeSliderControl) {
+    println("Hovered over control: \(control.tag) -> Date: \(date), loc: \(index)")
+  }
+  
+  func selectedDate(date: NSDate, index: Int, control: JCMTimeSliderControl) {
+    println("Selected control: \(control.tag) -> Date: \(date), loc: \(index)")
   }
   
 }
