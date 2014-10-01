@@ -16,19 +16,18 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "JCMTimeSlider"
-  s.version      = "0.0.1"
-  s.summary      = "A short description of JCMTimeSlider."
+  s.version      = "0.2.0"
+  s.summary      = "iOS control to navigate a timeline with large number of data points (dates)."
 
   s.description  = <<-DESC
-                   A longer description of JCMTimeSlider in Markdown format.
+                   This is an iOS control to navigate a timeline with large number of data points, written in Swift
 
-                   * Think: Why did you write this? What is the focus? What does it do?
-                   * CocoaPods will be using this to generate tags, and improve search results.
-                   * Try to keep it short, snappy and to the point.
-                   * Finally, don't worry about the indent, CocoaPods strips it!
+                   * Works with few or a large number of data points.
+                   * Uses non-linear selection around your touch, for easy selection.
+                   * Similar look and feel to the Time Machine control
                    DESC
 
-  s.homepage     = "http://EXAMPLE/JCMTimeSlider"
+  s.homepage     = "https://github.com/jcmendez/JCMTimeSlider"
   # s.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
 
@@ -39,8 +38,8 @@ Pod::Spec.new do |s|
   #  Popular ones are 'MIT', 'BSD' and 'Apache License, Version 2.0'.
   #
 
-  s.license      = "MIT (example)"
-  # s.license      = { :type => "MIT", :file => "FILE_LICENSE" }
+  # s.license      = "MIT"
+  # s.license      = { :type => "MIT", :file => "LICENSE" }
 
 
   # ――― Author Metadata  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -56,7 +55,7 @@ Pod::Spec.new do |s|
   s.author             = { "Juan C. Méndez" => "jcmendez@alum.mit.edu" }
   # Or just: s.author    = "Juan C. Méndez"
   # s.authors            = { "Juan C. Méndez" => "jcmendez@alum.mit.edu" }
-  # s.social_media_url   = "http://twitter.com/Juan C. Méndez"
+  s.social_media_url   = "http://twitter.com/jcmendez_us"
 
   # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
@@ -65,7 +64,7 @@ Pod::Spec.new do |s|
   #
 
   # s.platform     = :ios
-  # s.platform     = :ios, "5.0"
+  s.platform     = :ios, "7.1"
 
   #  When using multiple platforms
   # s.ios.deployment_target = "5.0"
@@ -78,7 +77,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  s.source       = { :git => "http://EXAMPLE/JCMTimeSlider.git", :tag => "0.0.1" }
+  s.source       = { :git => "https://github.com/jcmendez/JCMTimeSlider.git", :tag => "0.2" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -89,8 +88,8 @@ Pod::Spec.new do |s|
   #  Not including the public_header_files will make all headers public.
   #
 
-  s.source_files  = "Classes", "Classes/**/*.{h,m}"
-  s.exclude_files = "Classes/Exclude"
+  s.source_files  = "TimeSlider/*.swift"
+  # s.exclude_files = "Classes/Exclude"
 
   # s.public_header_files = "Classes/**/*.h"
 
@@ -128,7 +127,7 @@ Pod::Spec.new do |s|
   #  where they will only apply to your library. If you depend on other Podspecs
   #  you can include multiple dependencies to ensure it works.
 
-  # s.requires_arc = true
+  s.requires_arc = true
 
   # s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
   # s.dependency "JSONKit", "~> 1.4"
