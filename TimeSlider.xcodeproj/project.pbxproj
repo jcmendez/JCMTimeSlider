@@ -42,6 +42,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		642C59521A0BAAC20012CD71 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		6494BEC519D9079300D9019E /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		64EE471919D30B0B0010BDD0 /* TimeSlider.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TimeSlider.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		64EE471D19D30B0B0010BDD0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -78,6 +79,7 @@
 		64EE471019D30B0B0010BDD0 = {
 			isa = PBXGroup;
 			children = (
+				642C59521A0BAAC20012CD71 /* README.md */,
 				6494BEC519D9079300D9019E /* MapKit.framework */,
 				64EE471B19D30B0B0010BDD0 /* TimeSlider */,
 				64EE473119D30B0B0010BDD0 /* TimeSliderTests */,
@@ -459,6 +461,7 @@
 				643E07B519DA2C9700D324B2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		64EE471419D30B0B0010BDD0 /* Build configuration list for PBXProject "TimeSlider" */ = {
 			isa = XCConfigurationList;

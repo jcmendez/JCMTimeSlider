@@ -146,6 +146,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
     }
   }
   
+  /// We manage the width of the control by changing this constraint
   @IBOutlet var widthConstraint: NSLayoutConstraint?
 
   /// The color of the labels
@@ -205,6 +206,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
     return Array<NSDate>()
   }()
   
+  /// An animator to show a snapping effect on the selected tick
   var snapAnimUIDynamicAnimator: UIDynamicAnimator?
   
   /**
