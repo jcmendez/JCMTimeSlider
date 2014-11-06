@@ -1,7 +1,7 @@
 JCMTimeSlider
 =============
 
-This is an iOS control to navigate a timeline with large number of data points (dates).  Well [documented](docs/index.html)
+This is an iOS control to navigate a timeline with large number of data points (dates).  Well [documented](http://jcmendez.github.io/JCMTimeSlider/docs)
 
 ![JCMTimeSlider in action](http://jcmendez.github.io/JCMTimeSlider/images/sample.gif)
 
