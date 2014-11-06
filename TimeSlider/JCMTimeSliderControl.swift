@@ -423,7 +423,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
     let latest = breakPoints[.Latest]
     let slope = earliest!.slopeTo(latest!)
     let temp = earliest!.projectOffset(from, slope: slope)
-    return NSDate.dateWithTimeIntervalSinceReferenceDate(temp.ti)
+    return NSDate(timeIntervalSinceReferenceDate:temp.ti)
   }
 
   private func distortedDateFrom(from: CGFloat) -> NSDate {
@@ -432,7 +432,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
     
     if from < breakPoints[.Earliest]!.y {
       println("<E")
-      return NSDate.dateWithTimeIntervalSinceReferenceDate(breakPoints[.Earliest]!.ti)
+      return NSDate(timeIntervalSinceReferenceDate:breakPoints[.Earliest]!.ti)
     }
     
     if let b = breakPoints[.FirstDistorted] {
@@ -441,7 +441,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
         leftPoint = breakPoints[.Earliest]!
         let slope = leftPoint.slopeTo(b)
         let temp = leftPoint.projectOffset(from, slope: slope)
-        return NSDate.dateWithTimeIntervalSinceReferenceDate(temp.ti)
+        return NSDate(timeIntervalSinceReferenceDate:temp.ti)
       }
     }
     
@@ -466,10 +466,10 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
       println(">>")
       let slope = leftPoint.slopeTo(breakPoints[.Latest]!)
       let temp = leftPoint.projectOffset(from, slope: slope)
-      return NSDate.dateWithTimeIntervalSinceReferenceDate(temp.ti)
+      return NSDate(timeIntervalSinceReferenceDate:temp.ti)
     }
     
-    return NSDate.dateWithTimeIntervalSinceReferenceDate(breakPoints[.Latest]!.ti)
+    return NSDate(timeIntervalSinceReferenceDate:breakPoints[.Latest]!.ti)
     //return linearDateFrom(from)
   }
 
@@ -601,8 +601,8 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
     labelsLayer!.masksToBounds = false
     labelsLayer!.position = CGPointZero
     
-    let a : Int = BreakPoint.Earliest.toRaw()
-    let b = BreakPoint.Latest.toRaw()
+    let a : Int = BreakPoint.Earliest.rawValue
+    let b = BreakPoint.Latest.rawValue
     let font = UIFont.systemFontOfSize(UIFont.smallSystemFontSize())
     let height = font.ascender - font.descender
     for i in a...b {
@@ -670,7 +670,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
         
         // Always show the labels for the first date
         if (expanded && (i==0) && (lastSelectedIndex? != 0)) {
-          let label = labelsLayer?.sublayers[BreakPoint.Earliest.toRaw()] as CATextLayer
+          let label = labelsLayer?.sublayers[BreakPoint.Earliest.rawValue] as CATextLayer
           label.position = CGPoint(x: 0, y: offset + fontOffset)
           label.opacity = 1.0
           let date = dataSource!.dateAtIndex(i)
@@ -679,7 +679,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
         
         // Always show the label for the last date
         if (expanded && (i == lastIndex-1) && (lastSelectedIndex? != lastIndex-1)) {
-          let label = labelsLayer?.sublayers[BreakPoint.Latest.toRaw()] as CATextLayer
+          let label = labelsLayer?.sublayers[BreakPoint.Latest.rawValue] as CATextLayer
           label.position = CGPoint(x: 0, y: offset + fontOffset)
           let date = dataSource!.dateAtIndex(i)
           label.string = JCMTimeSliderControl.shortDateFormatter.stringFromDate(date)
@@ -699,7 +699,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
               tick.lineWidth = 3.0
               
               if expanded {
-                let label = labelsLayer?.sublayers[BreakPoint.Selected.toRaw()] as CATextLayer
+                let label = labelsLayer?.sublayers[BreakPoint.Selected.rawValue] as CATextLayer
                 label.position = CGPoint(x: 0, y: offset + fontOffset)
                 label.opacity = 1.0
                 let date = dataSource!.dateAtIndex(i)
@@ -714,7 +714,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
               
               if expanded && (indexDifference == linearExpansionRange - 1) {
                 let labelID = (i > lastSelectedIndex) ? BreakPoint.LastDistorted : BreakPoint.FirstDistorted
-                let label = labelsLayer?.sublayers[labelID.toRaw()] as CATextLayer
+                let label = labelsLayer?.sublayers[labelID.rawValue] as CATextLayer
                 
                 label.opacity = 0.3
                 label.position = CGPoint(x: 0, y: offset + fontOffset)
@@ -769,5 +769,5 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   }
 }
 
-internal let kNoDataSourceInconsistency : StaticString = "Must have a data source"
-internal let kNoWrongNumberOfLayersInconsistency : StaticString = "Inconsistent number of layers"
+internal let kNoDataSourceInconsistency : String = "Must have a data source"
+internal let kNoWrongNumberOfLayersInconsistency : String = "Inconsistent number of layers"
