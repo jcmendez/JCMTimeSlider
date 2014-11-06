@@ -330,6 +330,11 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   }
   
   override func continueTrackingWithTouch(touch: UITouch, withEvent event: UIEvent) -> Bool {
+    if ((dataSource == nil) || (dataSource!.numberOfDates() < 2)) {
+      closeLater()
+      return false
+    }
+    
     let point = touch.locationInView(self)
     let global = touch.locationInView(self.superview)
     let inBounds = frame.contains(global)
@@ -355,6 +360,11 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   
   override func endTrackingWithTouch(touch: UITouch, withEvent event: UIEvent) {
     super.endTrackingWithTouch(touch, withEvent: event)
+    
+    if ((dataSource == nil) || (dataSource!.numberOfDates() < 2)) {
+      return
+    }
+    
     // Prepare the snapping animation to the selected date
     let point = touch.locationInView(self)
 
@@ -769,7 +779,26 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   func dateAtIndex(index: Int) -> NSDate {
     return dates[index]
   }
+  
+  override func prepareForInterfaceBuilder() {
+    let twoYearsAgo=NSDate(timeIntervalSinceNow: -2*365*24*60*60)
+    let now = NSDate(timeIntervalSinceNow: 0)
+    let amount = Int(arc4random_uniform(25))
+    var a = Array<NSDate>()
+    let diff = now.timeIntervalSinceDate(twoYearsAgo)
+    for i in 1...amount {
+      let randomNumber = arc4random_uniform(UINT32_MAX)
+      let randomTimeInterval = diff * Double(randomNumber) / Double(UINT32_MAX)
+      a.append(NSDate(timeInterval: randomTimeInterval, sinceDate: twoYearsAgo))
+    }
+    a.sort { (d1, d2) -> Bool in
+      return d1.compare(d2) == NSComparisonResult.OrderedAscending
+    }
+    self.dates = a
+  }
+
 }
 
 internal let kNoDataSourceInconsistency : String = "Must have a data source"
 internal let kNoWrongNumberOfLayersInconsistency : String = "Inconsistent number of layers"
+
