@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		6417070119E14346001AC7EA /* JCMCancelableClosure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6417070019E14346001AC7EA /* JCMCancelableClosure.swift */; };
 		6494BEC619D9079300D9019E /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6494BEC519D9079300D9019E /* MapKit.framework */; };
 		64EE471F19D30B0B0010BDD0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64EE471E19D30B0B0010BDD0 /* AppDelegate.swift */; };
 		64EE472119D30B0B0010BDD0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64EE472019D30B0B0010BDD0 /* ViewController.swift */; };
@@ -42,6 +43,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6417070019E14346001AC7EA /* JCMCancelableClosure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JCMCancelableClosure.swift; sourceTree = "<group>"; };
 		6494BEC519D9079300D9019E /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		64EE471919D30B0B0010BDD0 /* TimeSlider.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TimeSlider.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		64EE471D19D30B0B0010BDD0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -104,6 +106,7 @@
 				64EE472719D30B0B0010BDD0 /* LaunchScreen.xib */,
 				64EE471C19D30B0B0010BDD0 /* Supporting Files */,
 				64EE473E19D30C530010BDD0 /* JCMTimeSliderControl.swift */,
+				6417070019E14346001AC7EA /* JCMCancelableClosure.swift */,
 			);
 			path = TimeSlider;
 			sourceTree = "<group>";
@@ -259,6 +262,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				64EE473F19D30C530010BDD0 /* JCMTimeSliderControl.swift in Sources */,
+				6417070119E14346001AC7EA /* JCMCancelableClosure.swift in Sources */,
 				64EE472119D30B0B0010BDD0 /* ViewController.swift in Sources */,
 				64EE471F19D30B0B0010BDD0 /* AppDelegate.swift in Sources */,
 			);
@@ -459,6 +463,7 @@
 				643E07B519DA2C9700D324B2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		64EE471419D30B0B0010BDD0 /* Build configuration list for PBXProject "TimeSlider" */ = {
 			isa = XCConfigurationList;

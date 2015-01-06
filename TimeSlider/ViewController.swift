@@ -107,11 +107,11 @@ class ViewController: UIViewController, JCMTimeSliderControlDelegate {
   }
   
   func hoveredOverDate(date: NSDate, index: Int, control: JCMTimeSliderControl) {
-    println("Hovered over control: \(control.tag) -> Date: \(date), loc: \(index)")
+    //println("Hovered over control: \(control.tag) -> Date: \(date), loc: \(index)")
   }
   
   func selectedDate(date: NSDate, index: Int, control: JCMTimeSliderControl) {
-    println("Selected control: \(control.tag) -> Date: \(date), loc: \(index)")
+    //println("Selected control: \(control.tag) -> Date: \(date), loc: \(index)")
   }
   
 }

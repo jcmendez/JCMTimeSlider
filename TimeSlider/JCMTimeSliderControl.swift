@@ -48,7 +48,6 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   required init(coder aDecoder: NSCoder) {
     // Initialize our added elements
     expanded = false
-    expansionChangeNeeded = false
     super.init(coder: aDecoder)
     clipsToBounds = true
     snapAnimUIDynamicAnimator = UIDynamicAnimator(referenceView: self)
@@ -127,26 +126,26 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   
   /// Is in expanded form?
   var expanded: Bool {
-    willSet {
-      if expanded != newValue {
-        expansionChangeNeeded = true
-      }
-    }
     
     didSet {
-      if expansionChangeNeeded {
-        expansionChangeNeeded = false
-        if expanded {
-          widthConstraint?.constant *= 2.0
-        } else {
-          widthConstraint?.constant *= 0.5
-        }
-        setNeedsLayout()
+      if expanded {
+        widthConstraint!.constant = baselineWidth! * 2.0
+      } else {
+        widthConstraint!.constant = baselineWidth!
       }
+      setNeedsLayout()
     }
   }
   
-  @IBOutlet var widthConstraint: NSLayoutConstraint?
+  @IBOutlet var widthConstraint: NSLayoutConstraint? {
+    didSet {
+      if let c = widthConstraint {
+        baselineWidth = c.constant
+      } else {
+        baselineWidth = self.frame.width
+      }
+    }
+  }
 
   /// The color of the labels
   var labelColor: UIColor = UIColor.whiteColor().colorWithAlphaComponent(0.2)
@@ -165,10 +164,18 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   /// How many pixels are the steps separated on the linear expansion
   var linearExpansionStep: CGFloat = 14.0
   
+  /// The previous offset of the selected index
+  private var previousOffset: CGFloat?
+  
   /// The index of the last selected tick
   var lastSelectedIndex: Int? {
+    willSet {
+      previousOffset = breakPoints[.Selected]?.y
+    }
     didSet {
       setupMidPoints()
+      adjustSelectedTick()
+      previousOffset = nil
     }
   }
   
@@ -195,8 +202,8 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   
   private var centerTick : DynamicTick?
   
-  /// Flag to determine whether to expand horizontally
-  private var expansionChangeNeeded : Bool
+  /// Width at initialization
+  private var baselineWidth : CGFloat?
   
   private var shouldUseTimeExpansion : Bool = false
   
@@ -207,27 +214,44 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   
   var snapAnimUIDynamicAnimator: UIDynamicAnimator?
   
+  var closingClosure: dispatch_cancelable_closure?
+  
+  func adjustSelectedTick() {
+    
+    if (snapAnimUIDynamicAnimator == nil) || (ticksLayer?.sublayers == nil) {
+      return
+    }
+    
+    let snapAnimator = snapAnimUIDynamicAnimator!
+    if snapAnimator.behaviors.count > 0 {
+      snapAnimator.removeAllBehaviors()
+    }
+    
+    let snapPointY = distortedYOffsetFrom(dataSource!.dateAtIndex(lastSelectedIndex!), index: lastSelectedIndex!)
+    let t = ticksLayer?.sublayers[lastSelectedIndex!] as CAShapeLayer
+    let labels = labelsLayer!.sublayers as [CATextLayer]
+    
+    let yOff : CGFloat = (previousOffset == nil) ? 0: previousOffset! - t.frame.origin.y
+    t.frame.offset(dx: 0, dy: yOff)
+    centerTick = DynamicTick(tick: t, labels:labels)
+    let snapPoint = CGPoint(x: t.frame.midX,y: snapPointY)
+    let snap = UISnapBehavior(item: centerTick!, snapToPoint: snapPoint)
+    snap.damping = 0.05
+    snap.action = nil
+    snapAnimator.addBehavior(snap)
+  }
+  
   /**
-  Closes the control after a second
+  Closes the control after the specified delay
   */
   func closeLater() {
-    if let lsi = lastSelectedIndex? {
-      let date = dataSource!.dateAtIndex(lsi)
-      delegate?.selectedDate?(date, index:lastSelectedIndex!, control:self)
-    }
-
     if let stc = secondsToClose {
-      dispatch_after(
-        dispatch_time(
-          DISPATCH_TIME_NOW,
-          Int64(Double(stc) * Double(NSEC_PER_SEC))
-        ),
-        dispatch_get_main_queue(), {
-          CATransaction.begin()
-          CATransaction.setValue(kCFBooleanTrue, forKey: kCATransactionDisableActions)
-          self.expanded = false
-          CATransaction.commit()
-      })
+      println("Scheduled closing")
+      closingClosure = delay(NSTimeInterval(stc)) {
+        println("Closed")
+        self.expanded = false
+        self.closingClosure = nil
+      }
     } else {
       self.expanded = false
     }
@@ -322,6 +346,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   }
 
   override func beginTrackingWithTouch(touch: UITouch, withEvent event: UIEvent) -> Bool {
+    cancel_delay(closingClosure)
     expanded = true
     continueTrackingWithTouch(touch, withEvent: event)
     return true  // Track continuously
@@ -365,11 +390,8 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
       centerTick = DynamicTick(tick: t, labels:labels)
       let snapPoint = CGPoint(x: t.frame.midX,y: snapPointY)
       let snap = UISnapBehavior(item: centerTick!, snapToPoint: snapPoint)
-      snap.damping = 0.1
-      self.userInteractionEnabled = false
-      snap.action = {
-        println("Snapping")
-      }
+      snap.damping = 0.05
+      snap.action = nil
       snapAnimUIDynamicAnimator?.addBehavior(snap)
     } else {
       closeLater()
@@ -537,7 +559,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
     ticksLayer!.masksToBounds = true
     ticksLayer!.position = CGPointZero
     
-    for i in 0...lastIndex-1 {
+    for var i:Int = 0; i < lastIndex; ++i {
       let aTick = CAShapeLayer()
       aTick.anchorPoint = CGPointZero
       ticksLayer!.addSublayer(aTick)
@@ -605,7 +627,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
     let b = BreakPoint.Latest.toRaw()
     let font = UIFont.systemFontOfSize(UIFont.smallSystemFontSize())
     let height = font.ascender - font.descender
-    for i in a...b {
+    for var i:Int = a; i <= b; ++i {
       let aLabel = CATextLayer()
       aLabel.anchorPoint = CGPointZero
       labelsLayer!.addSublayer(aLabel)
@@ -644,7 +666,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
       }
       
       // Process each tick
-      for i in 0...lastIndex-1 {
+      for var i:Int = 0; i < lastIndex; ++i {
         let tick = sublayers[i] as CAShapeLayer
         tick.lineWidth = 1.0
         tick.transform = CATransform3DIdentity
@@ -743,6 +765,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   
   override func layoutSubviews() {
     super.layoutSubviews()
+    assert(widthConstraint != nil, "Width constraint must be set")
     setupEndPoints()
     setupMidPoints()
     ticksLayer?.frame = bounds
@@ -753,8 +776,11 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   func dynamicAnimatorDidPause(animator: UIDynamicAnimator) {
     if animator == snapAnimUIDynamicAnimator? {
       println("Snapped")
+      if let lsi = lastSelectedIndex? {
+        let date = dataSource!.dateAtIndex(lsi)
+        delegate?.selectedDate?(date, index:lastSelectedIndex!, control:self)
+      }
       animator.removeAllBehaviors()
-      self.userInteractionEnabled = true
       self.expanded = false
     }
   }
