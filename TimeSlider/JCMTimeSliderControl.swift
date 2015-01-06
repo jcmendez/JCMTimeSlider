@@ -33,7 +33,7 @@ import QuartzCore
 *  Protocol that must be implemented by any data source for this control.  Note that the
 *  data source must guarantee that the dates are sorted ascending
 */
-@objc protocol JCMTimeSliderControlDataSource {
+protocol JCMTimeSliderControlDataSource {
   func numberOfDates() -> Int
   func dateAtIndex(index: Int) -> NSDate
 }
@@ -41,41 +41,6 @@ import QuartzCore
 @objc protocol JCMTimeSliderControlDelegate {
   optional func selectedDate(date:NSDate, index:Int, control:JCMTimeSliderControl)
   optional func hoveredOverDate(date:NSDate, index:Int, control:JCMTimeSliderControl)
-}
-
-/**
-*  We use this shell class to let UIKit Dynamics to do the heavy lifting of the animation
-*  for our selected tick
-*/
-class DynamicTick : NSObject, UIDynamicItem {
-  var tick: CAShapeLayer
-  var labels: [CATextLayer]
-  var center: CGPoint {
-    get {
-      return CGPoint(x: tick.frame.midX, y: tick.frame.midY)
-    }
-    set {
-      let w = tick.frame.width
-      let h = tick.frame.height
-      let xx = newValue.x - w/2.0
-      let yy = newValue.y - h/2.0
-      let newFrame = CGRect(x: xx, y: yy, width: w, height: h)
-      tick.frame = newFrame
-    }
-  }
-  var bounds: CGRect {
-    get {
-      return tick.bounds
-    }
-  }
-  var transform: CGAffineTransform
-  
-  init(tick: CAShapeLayer, labels: [CATextLayer]) {
-    self.tick = tick
-    self.labels = labels
-    self.transform = CGAffineTransformIdentity
-    super.init()
-  }
 }
 
 class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderControlDataSource {
@@ -97,6 +62,41 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
 
   internal enum PointKind {
     case Linear, Anchored, FloatLeft, LinearMiddle, FloatRight
+  }
+
+  /**
+  *  We use this shell class to let UIKit Dynamics to do the heavy lifting of the animation
+  *  for our selected tick
+  */
+  internal class DynamicTick : NSObject, UIDynamicItem {
+    var tick: CAShapeLayer
+    var labels: [CATextLayer]
+    var center: CGPoint {
+      get {
+        return CGPoint(x: tick.frame.midX, y: tick.frame.midY)
+      }
+      set {
+        let w = tick.frame.width
+        let h = tick.frame.height
+        let xx = newValue.x - w/2.0
+        let yy = newValue.y - h/2.0
+        let newFrame = CGRect(x: xx, y: yy, width: w, height: h)
+        tick.frame = newFrame
+      }
+    }
+    var bounds: CGRect {
+      get {
+        return tick.bounds
+      }
+    }
+    var transform: CGAffineTransform
+    
+    init(tick: CAShapeLayer, labels: [CATextLayer]) {
+      self.tick = tick
+      self.labels = labels
+      self.transform = CGAffineTransformIdentity
+      super.init()
+    }
   }
   
   /**
@@ -146,15 +146,14 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
     }
   }
   
-  var waitingToSnap: Bool = false
-  
+  /// We manage the width of the control by changing this constraint
   @IBOutlet var widthConstraint: NSLayoutConstraint?
 
   /// The color of the labels
-  var labelColor: UIColor = UIColor.whiteColor().colorWithAlphaComponent(1.0)
+  var labelColor: UIColor = UIColor.whiteColor().colorWithAlphaComponent(0.2)
 
   /// The color of the inactive ticks
-  var inactiveTickColor: UIColor = UIColor.whiteColor().colorWithAlphaComponent(0.6)
+  var inactiveTickColor: UIColor = UIColor.whiteColor().colorWithAlphaComponent(0.2)
   
   /// The color of the selected tick
   var selectedTickColor: UIColor = UIColor.whiteColor()
@@ -180,13 +179,9 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   /// Flag to allow the control to keep tracking even if user goes outside the frame
   var allowTrackOutsideControl: Bool = true
   
-  /// Flag that tells whether the control has dates to show or not
-  private (set) var datesToShow: Bool = false
-  
   /// The data source for this control
   var dataSource: JCMTimeSliderControlDataSource? {
     didSet {
-      datesToShow = (dataSource != nil) && (dataSource?.numberOfDates() > 2)
       shouldUseTimeExpansion = (dataSource?.numberOfDates() > 2 * linearExpansionRange)
       setupEndPoints()
       setupSubViews()
@@ -211,12 +206,17 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
     return Array<NSDate>()
   }()
   
+  /// An animator to show a snapping effect on the selected tick
   var snapAnimUIDynamicAnimator: UIDynamicAnimator?
   
   /**
   Closes the control after a second
   */
   func closeLater() {
+    if let lsi = lastSelectedIndex? {
+      let date = dataSource!.dateAtIndex(lsi)
+      delegate?.selectedDate?(date, index:lastSelectedIndex!, control:self)
+    }
 
     if let stc = secondsToClose {
       dispatch_after(
@@ -228,12 +228,10 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
           CATransaction.begin()
           CATransaction.setValue(kCFBooleanTrue, forKey: kCATransactionDisableActions)
           self.expanded = false
-          self.waitingToSnap = false
           CATransaction.commit()
       })
     } else {
-      waitingToSnap = false
-      expanded = false
+      self.expanded = false
     }
   }
   
@@ -332,9 +330,9 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   }
   
   override func continueTrackingWithTouch(touch: UITouch, withEvent event: UIEvent) -> Bool {
-    
-    if !datesToShow {
-      return true
+    if ((dataSource == nil) || (dataSource!.numberOfDates() < 2)) {
+      closeLater()
+      return false
     }
     
     let point = touch.locationInView(self)
@@ -342,11 +340,6 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
     let inBounds = frame.contains(global)
     let offset = point.y
     let hypoDate = linearDateFrom(offset)
-    
-    if (waitingToSnap) {
-      return true
-    }
-    
     lastSelectedIndex = findNearestDate(hypoDate)
     
     updateTicksAndLabels()
@@ -368,10 +361,10 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   override func endTrackingWithTouch(touch: UITouch, withEvent event: UIEvent) {
     super.endTrackingWithTouch(touch, withEvent: event)
     
-    if !datesToShow {
+    if ((dataSource == nil) || (dataSource!.numberOfDates() < 2)) {
       return
     }
-
+    
     // Prepare the snapping animation to the selected date
     let point = touch.locationInView(self)
 
@@ -385,16 +378,11 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
       let snapPoint = CGPoint(x: t.frame.midX,y: snapPointY)
       let snap = UISnapBehavior(item: centerTick!, snapToPoint: snapPoint)
       snap.damping = 0.1
-      waitingToSnap = true
-      
+      self.userInteractionEnabled = false
       snap.action = {
-        // println("Snapping")
+        println("Snapping")
       }
       snapAnimUIDynamicAnimator?.addBehavior(snap)
-      
-      let date = dataSource!.dateAtIndex(lastSelectedIndex!)
-      delegate?.selectedDate?(date, index:lastSelectedIndex!, control:self)
-
     } else {
       closeLater()
     }
@@ -555,10 +543,6 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
       ticksLayer!.removeFromSuperlayer()
     }
 
-    if (lastIndex <= 0) {
-      return
-    }
-    
     ticksLayer = CALayer()
     layer.addSublayer(ticksLayer!)
 
@@ -782,7 +766,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
     if animator == snapAnimUIDynamicAnimator? {
       println("Snapped")
       animator.removeAllBehaviors()
-      self.waitingToSnap = false
+      self.userInteractionEnabled = true
       self.expanded = false
     }
   }
@@ -795,7 +779,26 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   func dateAtIndex(index: Int) -> NSDate {
     return dates[index]
   }
+  
+  override func prepareForInterfaceBuilder() {
+    let twoYearsAgo=NSDate(timeIntervalSinceNow: -2*365*24*60*60)
+    let now = NSDate(timeIntervalSinceNow: 0)
+    let amount = Int(arc4random_uniform(25))
+    var a = Array<NSDate>()
+    let diff = now.timeIntervalSinceDate(twoYearsAgo)
+    for i in 1...amount {
+      let randomNumber = arc4random_uniform(UINT32_MAX)
+      let randomTimeInterval = diff * Double(randomNumber) / Double(UINT32_MAX)
+      a.append(NSDate(timeInterval: randomTimeInterval, sinceDate: twoYearsAgo))
+    }
+    a.sort { (d1, d2) -> Bool in
+      return d1.compare(d2) == NSComparisonResult.OrderedAscending
+    }
+    self.dates = a
+  }
+
 }
 
 internal let kNoDataSourceInconsistency : String = "Must have a data source"
 internal let kNoWrongNumberOfLayersInconsistency : String = "Inconsistent number of layers"
+
