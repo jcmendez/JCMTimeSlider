@@ -63,7 +63,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   internal enum PointKind {
     case Linear, Anchored, FloatLeft, LinearMiddle, FloatRight
   }
-
+  
   /**
   *  We use this shell class to let UIKit Dynamics to do the heavy lifting of the animation
   *  for our selected tick
@@ -176,8 +176,11 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   /// Will be set to true if the control is animating the snapping
   var isSnapping: Bool = false
   
+  /// Flags if snapping was canceled because user re-engaged control
+  var canceledSnapping: Bool = false
+  
   /// Seconds from the time user lifts touch until the control auto-closes
-  var secondsToClose: CGFloat? = 0.5
+  let secondsToClose: NSTimeInterval = 0.5
   
   /// Flag to allow the control to keep tracking even if user goes outside the frame
   var allowTrackOutsideControl: Bool = true
@@ -216,30 +219,30 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
     return animator
   }()
   
+  /// A closure that is used to close the control after user lifts finger
+  private var closureToCloseControl : dispatch_cancelable_closure?
+  
   /**
-  Closes the control after a second
+  Closes the control after the time specified in secondsToClose
   */
   func closeLater() {
     if let lsi = lastSelectedIndex? {
       let date = dataSource!.dateAtIndex(lsi)
       delegate?.selectedDate?(date, index:lastSelectedIndex!, control:self)
     }
-
-    if let stc = secondsToClose {
-      dispatch_after(
-        dispatch_time(
-          DISPATCH_TIME_NOW,
-          Int64(Double(stc) * Double(NSEC_PER_SEC))
-        ),
-        dispatch_get_main_queue(), {
-          CATransaction.begin()
-          CATransaction.setValue(kCFBooleanTrue, forKey: kCATransactionDisableActions)
-          self.expanded = false
-          CATransaction.commit()
-      })
-    } else {
-      self.expanded = false
+    
+    if closureToCloseControl != nil {
+      cancel_delay(closureToCloseControl)
     }
+    
+    closureToCloseControl = delay(secondsToClose, { () -> () in
+      CATransaction.begin()
+      CATransaction.setValue(kCFBooleanTrue, forKey: kCATransactionDisableActions)
+      println("Contracting control")
+      self.expanded = false
+      self.closureToCloseControl = nil
+      CATransaction.commit()
+    })
   }
   
   /**
@@ -333,7 +336,11 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   override func beginTrackingWithTouch(touch: UITouch, withEvent event: UIEvent) -> Bool {
     if isSnapping {
       println("Canceled snapping")
+      canceledSnapping = true
       snapAnimUIDynamicAnimator.removeAllBehaviors()
+      if closureToCloseControl != nil {
+        cancel_delay(closureToCloseControl)
+      }
       isSnapping = false
     }
     expanded = true
@@ -778,9 +785,12 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
     if animator == snapAnimUIDynamicAnimator {
       println("Snapped")
       animator.removeAllBehaviors()
-      centerTick = nil
       isSnapping = false
-      self.expanded = false
+      if canceledSnapping {
+        canceledSnapping = false
+      } else {
+        closeLater()
+      }
     }
   }
   // MARK - Methods to be our own data source
