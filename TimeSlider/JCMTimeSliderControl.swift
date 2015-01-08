@@ -49,10 +49,10 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
     // Initialize our added elements
     expanded = false
     expansionChangeNeeded = false
+
     super.init(coder: aDecoder)
+
     clipsToBounds = true
-    snapAnimUIDynamicAnimator = UIDynamicAnimator(referenceView: self)
-    snapAnimUIDynamicAnimator!.delegate = self
     dataSource = self
   }
 
@@ -172,6 +172,9 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
       setupMidPoints()
     }
   }
+
+  /// Will be set to true if the control is animating the snapping
+  var isSnapping: Bool = false
   
   /// Seconds from the time user lifts touch until the control auto-closes
   var secondsToClose: CGFloat? = 0.5
@@ -207,7 +210,11 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   }()
   
   /// An animator to show a snapping effect on the selected tick
-  var snapAnimUIDynamicAnimator: UIDynamicAnimator?
+  lazy private var snapAnimUIDynamicAnimator: UIDynamicAnimator = {
+    let animator = UIDynamicAnimator(referenceView: self)
+    animator.delegate = self
+    return animator
+  }()
   
   /**
   Closes the control after a second
@@ -324,6 +331,11 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   }
 
   override func beginTrackingWithTouch(touch: UITouch, withEvent event: UIEvent) -> Bool {
+    if isSnapping {
+      println("Canceled snapping")
+      snapAnimUIDynamicAnimator.removeAllBehaviors()
+      isSnapping = false
+    }
     expanded = true
     continueTrackingWithTouch(touch, withEvent: event)
     return true  // Track continuously
@@ -378,11 +390,11 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
       let snapPoint = CGPoint(x: t.frame.midX,y: snapPointY)
       let snap = UISnapBehavior(item: centerTick!, snapToPoint: snapPoint)
       snap.damping = 0.1
-      self.userInteractionEnabled = false
-      snap.action = {
-        println("Snapping")
-      }
-      snapAnimUIDynamicAnimator?.addBehavior(snap)
+      isSnapping = true
+//      snap.action = {
+//        println("Snapping")
+//      }
+      snapAnimUIDynamicAnimator.addBehavior(snap)
     } else {
       closeLater()
     }
@@ -763,10 +775,11 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
   }
 
   func dynamicAnimatorDidPause(animator: UIDynamicAnimator) {
-    if animator == snapAnimUIDynamicAnimator? {
+    if animator == snapAnimUIDynamicAnimator {
       println("Snapped")
       animator.removeAllBehaviors()
-      self.userInteractionEnabled = true
+      centerTick = nil
+      isSnapping = false
       self.expanded = false
     }
   }
