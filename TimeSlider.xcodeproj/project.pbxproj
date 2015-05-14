@@ -30,6 +30,10 @@
 		64EE472919D30B0B0010BDD0 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 64EE472719D30B0B0010BDD0 /* LaunchScreen.xib */; };
 		64EE473519D30B0B0010BDD0 /* TimeSliderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64EE473419D30B0B0010BDD0 /* TimeSliderTests.swift */; };
 		64EE473F19D30C530010BDD0 /* JCMTimeSliderControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64EE473E19D30C530010BDD0 /* JCMTimeSliderControl.swift */; };
+		AC0232551B0264A100193A74 /* TimeSliderTestDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0232541B0264A100193A74 /* TimeSliderTestDataSource.swift */; };
+		AC0232571B0265A800193A74 /* JCMTimeSliderUtilsTests1.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0232561B0265A800193A74 /* JCMTimeSliderUtilsTests1.swift */; };
+		ACAD65C21B01380600B14ABE /* JCMTimeSliderUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAD65C11B01380600B14ABE /* JCMTimeSliderUtilsTests.swift */; };
+		ACF905E31B011C4D002A960C /* JCMTimeSliderUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF905E21B011C4D002A960C /* JCMTimeSliderUtils.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +60,10 @@
 		64EE473319D30B0B0010BDD0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		64EE473419D30B0B0010BDD0 /* TimeSliderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSliderTests.swift; sourceTree = "<group>"; };
 		64EE473E19D30C530010BDD0 /* JCMTimeSliderControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JCMTimeSliderControl.swift; sourceTree = "<group>"; };
+		AC0232541B0264A100193A74 /* TimeSliderTestDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeSliderTestDataSource.swift; sourceTree = "<group>"; };
+		AC0232561B0265A800193A74 /* JCMTimeSliderUtilsTests1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JCMTimeSliderUtilsTests1.swift; sourceTree = "<group>"; };
+		ACAD65C11B01380600B14ABE /* JCMTimeSliderUtilsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JCMTimeSliderUtilsTests.swift; sourceTree = "<group>"; };
+		ACF905E21B011C4D002A960C /* JCMTimeSliderUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JCMTimeSliderUtils.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +114,7 @@
 				64EE472719D30B0B0010BDD0 /* LaunchScreen.xib */,
 				64EE471C19D30B0B0010BDD0 /* Supporting Files */,
 				64EE473E19D30C530010BDD0 /* JCMTimeSliderControl.swift */,
+				ACF905E21B011C4D002A960C /* JCMTimeSliderUtils.swift */,
 				6417070019E14346001AC7EA /* JCMCancelableClosure.swift */,
 			);
 			path = TimeSlider;
@@ -123,6 +132,9 @@
 			isa = PBXGroup;
 			children = (
 				64EE473419D30B0B0010BDD0 /* TimeSliderTests.swift */,
+				ACAD65C11B01380600B14ABE /* JCMTimeSliderUtilsTests.swift */,
+				AC0232561B0265A800193A74 /* JCMTimeSliderUtilsTests1.swift */,
+				AC0232541B0264A100193A74 /* TimeSliderTestDataSource.swift */,
 				64EE473219D30B0B0010BDD0 /* Supporting Files */,
 			);
 			path = TimeSliderTests;
@@ -181,7 +193,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0600;
-				ORGANIZATIONNAME = BG4US;
+				ORGANIZATIONNAME = Accenture;
 				TargetAttributes = {
 					643E07B319DA2C9700D324B2 = {
 						CreatedOnToolsVersion = 6.0;
@@ -265,6 +277,7 @@
 				6417070119E14346001AC7EA /* JCMCancelableClosure.swift in Sources */,
 				64EE472119D30B0B0010BDD0 /* ViewController.swift in Sources */,
 				64EE471F19D30B0B0010BDD0 /* AppDelegate.swift in Sources */,
+				ACF905E31B011C4D002A960C /* JCMTimeSliderUtils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,6 +285,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC0232551B0264A100193A74 /* TimeSliderTestDataSource.swift in Sources */,
+				ACAD65C21B01380600B14ABE /* JCMTimeSliderUtilsTests.swift in Sources */,
+				AC0232571B0265A800193A74 /* JCMTimeSliderUtilsTests1.swift in Sources */,
 				64EE473519D30B0B0010BDD0 /* TimeSliderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

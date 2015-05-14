@@ -1,12 +1,9 @@
 //
-//  TimeSliderTests.swift
-//  TimeSliderTests
+//  TimeSliderTestDataSource.swift
+//  TimeSlider
 //
-//  Created by Juan C. Mendez on 9/26/14.
-//
-//  The MIT License (MIT)
-//
-//  Copyright (c) 2014 Juan C. Mendez (jcmendez@alum.mit.edu)
+//  Created by Larry Pepchuk on 5/12/15.
+//  Copyright (c) 2015 Accenture. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -26,28 +23,37 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-import UIKit
-import XCTest
+import Foundation
 import TimeSlider
 
-class TimeSliderTests: XCTestCase {
-
-    override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+//
+//  Represents a test data source that can be initialized with no or some data
+//
+class TimeSliderTestDataSource: JCMTimeSliderControlDataSource {
+    
+    let data: [NSDate]?
+    
+    func numberOfDates() -> Int {
+        return data!.count
     }
     
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    init(data: [NSDate]?) {
         
-        super.tearDown()
+        // Init data source with the data we supply (can be empty)
+        self.data = data
     }
     
-//    func testPerformanceExample() {
-//        // This is an example of a performance test case.
-//        self.measureBlock() {
-//            // Put the code you want to measure the time of here.
-//        }
-//    }
-    
+    func dateAtIndex(index: Int) -> NSDate {
+        if data!.count > 0 {
+            return data![index]
+        } else {
+            
+            //
+            //  Data source is empty
+            //
+            
+            // Return current date
+            return NSDate(timeIntervalSinceNow: 0);
+        }
+    }
 }
