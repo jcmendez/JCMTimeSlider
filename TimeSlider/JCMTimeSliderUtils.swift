@@ -3,6 +3,9 @@
 //  TimeSlider
 //
 //  Created by Larry Pepchuk on 5/11/15.
+//
+//  The MIT License (MIT)
+//
 //  Copyright (c) 2015 Accenture. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,12 +34,14 @@ let DATA_SOURCE_MAX_RECORD_COUNT = 1000
 
 /**
 *  Used to map time to points and vice versa
+*
+*   NOTE: 'public' access is required for unit testing (as code runs in a separate module)
 */
 public struct TimeMappingPoint {
     
-    var ti: NSTimeInterval
-    var y: CGFloat
-    var index: Int?
+    public var ti: NSTimeInterval
+    public var y: CGFloat
+    public var index: Int?
     
     //
     //  We must define public initializer to be able to Unit Test the struct
@@ -47,6 +52,11 @@ public struct TimeMappingPoint {
         self.index = index
     }
     
+    //
+    //  Computes slope for two time mapping points.
+    //
+    //  Slope is defined as: {time interval difference} / {Y coordinates difference}
+    //
     public func slopeTo(other: TimeMappingPoint) -> CGFloat {
         
         // Make sure we don't try to divide by zero
@@ -55,16 +65,43 @@ public struct TimeMappingPoint {
             // Officially, slope is not defined here (it is a vertical line)
             return 0.0
         } else {
-            return (other.y - y)/CGFloat(other.ti - ti)
+            return (other.y - y) / CGFloat(other.ti - ti)
         }
     }
+
     
-    func projectTime(new_ti: NSTimeInterval, slope: CGFloat) -> TimeMappingPoint {
-        return TimeMappingPoint(ti:new_ti, y:slope*CGFloat(new_ti-ti)+y, index:nil)
+    //
+    //  Creates a new time mapping point using time interval and a slope.
+    //
+    //  Computes new Y coordinate as: slope * {time interval difference} + y
+    //
+    public func projectTime(new_ti: NSTimeInterval, slope: CGFloat) -> TimeMappingPoint {
+        
+        let new_y: CGFloat = slope * CGFloat(new_ti-ti) + y
+        
+        return TimeMappingPoint(ti: new_ti, y: new_y, index: nil)
     }
     
-    func projectOffset(new_y: CGFloat, slope: CGFloat) -> TimeMappingPoint {
-        return TimeMappingPoint(ti: ti+NSTimeInterval((new_y-y)/slope), y: new_y, index:nil)
+    //
+    //  Creates a new time mapping point using Y coordinate and a slope.
+    //
+    //  Computes new time interval as: ti + {Y coordinate difference} / slope
+    //
+    public func projectOffset(new_y: CGFloat, slope: CGFloat) -> TimeMappingPoint {
+        
+        let new_ti: NSTimeInterval
+        
+        // Make sure we don't try to divide by zero
+        if slope == 0 {
+            
+            // Officially, time interval is not defined here (zero slope is invalid)
+            
+            new_ti = 0 // return zero
+        } else {
+            new_ti = ti + NSTimeInterval((new_y - y) / slope)
+        }
+        
+        return TimeMappingPoint(ti: new_ti, y: new_y, index:nil)
     }
 }
 

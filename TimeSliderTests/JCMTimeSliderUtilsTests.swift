@@ -3,6 +3,9 @@
 //  TimeSlider
 //
 //  Created by Larry Pepchuk on 5/11/15.
+//
+//  The MIT License (MIT)
+//
 //  Copyright (c) 2015 Accenture. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -250,9 +253,10 @@ class JCMTimeSliderUtilsTests: XCTestCase {
         // Exceed max allowed number of records
         
         //
-        //  NOTE: There is currently no easy way to catch an exception in Swift
-        //      the same was as in Objective-C (XCTAssertThrows(...)) so...
+        //  NOTE: There is currently no easy way to catch an exception/assert during unit testing in Swift.
+        //      In objective-C we could use XCTAssertThrows(...) but it does not exists in Swift.
         //
+        //  So...
         //      a) if we uncomment the code below, it will crash the app (thus Unit Tests cannot continue)
         //      b) if we keep it commented out, we certanly cannot check for the test condition
         //
@@ -313,7 +317,9 @@ class JCMTimeSliderUtilsTests: XCTestCase {
         let endIndex: NSTimeInterval = startIndex + recordCountConverted
         let currentDate = NSDate(timeIntervalSinceNow: 0)
 
-        // Test exact match
+        //
+        // Test exact and close matches
+        //
         var j = 0
         var targetDate: NSDate
         for var i: NSTimeInterval = startIndex; i < endIndex; i++ {
@@ -323,12 +329,12 @@ class JCMTimeSliderUtilsTests: XCTestCase {
             XCTAssertEqual(self.tsu.findNearestDate(self.testDataSource,
                 searchItem: targetDate), j, "Should match current index \(j)")
             
-            // Target date is shifted 10 sec in the past
+            // Target date is a close match: shifted 10 sec in the past
             targetDate = currentDate.dateByAddingTimeInterval(60*60*24*i - 10);
             XCTAssertEqual(self.tsu.findNearestDate(self.testDataSource,
                 searchItem: targetDate), j - 1 < 0 ? 0 : j - 1, "Should match previous index \(j)")
             
-            // Target date is shifted 10 sec in the future
+            // Target date is a close match: shifted 10 sec in the future
             targetDate = currentDate.dateByAddingTimeInterval(60*60*24*i + 10);
             XCTAssertEqual(self.tsu.findNearestDate(self.testDataSource,
                 searchItem: targetDate), j, "Should match current index \(j)")

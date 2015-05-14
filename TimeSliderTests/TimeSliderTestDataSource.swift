@@ -3,6 +3,9 @@
 //  TimeSlider
 //
 //  Created by Larry Pepchuk on 5/12/15.
+//
+//  The MIT License (MIT)
+//
 //  Copyright (c) 2015 Accenture. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
