@@ -56,7 +56,7 @@ class SampleData: JCMTimeSliderControlDataSource {
     }
     
     func dataPointAtIndex(index: Int) -> JCMTimeSliderControlDataPoint {
-        return JCMTimeSliderControlDataPoint(date: data![index], hasIcon: false)
+        return JCMTimeSliderControlDataPoint(date: data![index], hasIcon: true)
     }
 }
 

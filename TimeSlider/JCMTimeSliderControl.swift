@@ -280,30 +280,6 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
         }
     }
     
-    /// The formatter for the short dates on the control
-    class var shortDateFormatter : NSDateFormatter {
-        struct Static {
-            static let instance: NSDateFormatter = {
-                let dateFormatter = NSDateFormatter()
-                dateFormatter.dateFormat = "MMM-yy"
-                return dateFormatter
-                }()
-        }
-        return Static.instance
-    }
-    
-    /// The formatter for the long dates
-    class var selectedDateFormatter : NSDateFormatter {
-        struct Static {
-            static let instance: NSDateFormatter = {
-                let dateFormatter = NSDateFormatter()
-                dateFormatter.dateFormat = kLocaleLongDateFormatSwift
-                return dateFormatter
-                }()
-        }
-        return Static.instance
-    }
-    
     func setupSubViews() {
         createTicks()
         createLabels()
@@ -462,7 +438,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
                 aTick.anchorPoint = CGPointZero
                 ticksLayer!.addSublayer(aTick)
                 
-                aTick.frame = CGRect(origin: CGPoint.zeroPoint,size: CGSize(width: frame.width,height: 2.0))
+                aTick.frame = CGRect(origin: CGPoint.zeroPoint,size: CGSize(width: frame.width, height: 2.0))
                 aTick.fillColor = UIColor.clearColor().CGColor
                 aTick.strokeColor = inactiveTickColor.CGColor
                 aTick.lineWidth = 1.0
@@ -542,6 +518,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
         
     }
     
+    
     /**
     Set the ticks to the desired position
     */
@@ -552,6 +529,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
         let font = UIFont.systemFontOfSize(UIFont.smallSystemFontSize())
         let fontOffset = -(font.xHeight / 2.0 - font.descender)
         let lastIndex = dataSource!.numberOfDates()
+        let labelLeadSpace: CGFloat = 3.0
         
         if let sublayers = ticksLayer?.sublayers {
             assert(lastIndex == sublayers.count, kNoWrongNumberOfLayersInconsistency)
@@ -597,18 +575,16 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
                 // Always show the labels for the first date
                 if (expanded && (i==0) && (lastSelectedIndex != 0)) {
                     let label = labelsLayer?.sublayers[JCMTimeSliderUtils.BreakPoint.Earliest.rawValue] as! CATextLayer
-                    label.position = CGPoint(x: 0, y: offset + fontOffset)
+                    label.position = CGPoint(x: labelLeadSpace, y: offset + fontOffset)
                     label.opacity = 1.0
-                    let date = dataSource!.dataPointAtIndex(i).date
-                    label.string = JCMTimeSliderControl.shortDateFormatter.stringFromDate(date)
+                    label.string = self.tsu.shortDateString(dataSource!.dataPointAtIndex(i))
                 }
                 
                 // Always show the label for the last date
                 if (expanded && (i == lastIndex-1) && (lastSelectedIndex != lastIndex-1)) {
                     let label = labelsLayer?.sublayers[JCMTimeSliderUtils.BreakPoint.Latest.rawValue] as! CATextLayer
-                    label.position = CGPoint(x: 0, y: offset + fontOffset)
-                    let date = dataSource!.dataPointAtIndex(i).date
-                    label.string = JCMTimeSliderControl.shortDateFormatter.stringFromDate(date)
+                    label.position = CGPoint(x: labelLeadSpace, y: offset + fontOffset)
+                    label.string = self.tsu.shortDateString(dataSource!.dataPointAtIndex(i))
                     label.opacity = 1.0
                 }
                 
@@ -626,10 +602,9 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
                             
                             if expanded {
                                 let label = labelsLayer?.sublayers[JCMTimeSliderUtils.BreakPoint.Selected.rawValue] as! CATextLayer
-                                label.position = CGPoint(x: 0, y: offset + fontOffset)
+                                label.position = CGPoint(x: labelLeadSpace, y: offset + fontOffset)
                                 label.opacity = 1.0
-                                let date = dataSource!.dataPointAtIndex(i).date
-                                label.string = JCMTimeSliderControl.selectedDateFormatter.stringFromDate(date)
+                                label.string = self.tsu.selectedDateString(dataSource!.dataPointAtIndex(i))
                             }
                             
                         } else {
@@ -643,10 +618,8 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
                                 let label = labelsLayer?.sublayers[labelID.rawValue] as! CATextLayer
                                 
                                 label.opacity = 0.3
-                                label.position = CGPoint(x: 0, y: offset + fontOffset)
-                                
-                                let date = dataSource!.dataPointAtIndex(i).date
-                                label.string = JCMTimeSliderControl.selectedDateFormatter.stringFromDate(date)
+                                label.position = CGPoint(x: labelLeadSpace, y: offset + fontOffset)
+                                label.string = self.tsu.selectedDateString(dataSource!.dataPointAtIndex(i))
                             }
                         }
                     }

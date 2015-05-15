@@ -199,4 +199,46 @@ public class JCMTimeSliderUtils {
         return localBreakPoints
     }
 
+    
+    /// The formatter for the short dates on the control
+    class var shortDateFormatter : NSDateFormatter {
+        struct Static {
+            static let instance: NSDateFormatter = {
+                let dateFormatter = NSDateFormatter()
+                dateFormatter.dateFormat = "MMM-yy"
+                return dateFormatter
+                }()
+        }
+        return Static.instance
+    }
+    
+    /// The formatter for the long dates
+    class var selectedDateFormatter : NSDateFormatter {
+        struct Static {
+            static let instance: NSDateFormatter = {
+                let dateFormatter = NSDateFormatter()
+                dateFormatter.dateFormat = kLocaleLongDateFormatSwift
+                return dateFormatter
+                }()
+        }
+        return Static.instance
+    }
+    
+    public func shortDateString(dataPoint: JCMTimeSliderControlDataPoint) -> NSString {
+        
+        if dataPoint.hasIcon {
+            return "• \(JCMTimeSliderUtils.shortDateFormatter.stringFromDate(dataPoint.date))"
+        } else {
+            return JCMTimeSliderUtils.shortDateFormatter.stringFromDate(dataPoint.date)
+        }
+    }
+    public func selectedDateString(dataPoint: JCMTimeSliderControlDataPoint) -> NSString {
+        
+        if dataPoint.hasIcon {
+            return "• \(JCMTimeSliderUtils.selectedDateFormatter.stringFromDate(dataPoint.date))"
+        } else {
+            return JCMTimeSliderUtils.selectedDateFormatter.stringFromDate(dataPoint.date)
+        }
+    }
+
 }
