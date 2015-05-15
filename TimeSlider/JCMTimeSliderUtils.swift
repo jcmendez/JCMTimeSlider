@@ -133,12 +133,15 @@ public class JCMTimeSliderUtils {
         
         while (true) {
             var currentIndex = (lowerIndex + upperIndex)/2
-            if(dataSource!.dateAtIndex(currentIndex) == searchItem) {
+            
+            let dataPoint = dataSource!.dataPointAtIndex(currentIndex)
+            
+            if(dataPoint.date == searchItem) {
                 return currentIndex
             } else if (lowerIndex > upperIndex) {
                 return currentIndex
             } else {
-                if (dataSource!.dateAtIndex(currentIndex).compare(searchItem) == NSComparisonResult.OrderedDescending) {
+                if (dataPoint.date.compare(searchItem) == NSComparisonResult.OrderedDescending) {
                     upperIndex = currentIndex - 1
                 } else {
                     lowerIndex = currentIndex + 1
@@ -184,8 +187,8 @@ public class JCMTimeSliderUtils {
         if let ds = dataSource {
             let numDates = dataSource!.numberOfDates()
             if numDates > 2 {
-                let firstDate = dataSource!.dateAtIndex(0)
-                let lastDate = dataSource!.dateAtIndex(numDates-1)
+                let firstDate = dataSource!.dataPointAtIndex(0).date
+                let lastDate = dataSource!.dataPointAtIndex(numDates-1).date
                 let lowestCoord = dataInsets.height
                 let highestCoord = frame.height - 2.0 * dataInsets.height
                 localBreakPoints[.Earliest] = TimeMappingPoint(ti: firstDate.timeIntervalSinceReferenceDate, y: lowestCoord, index: 0)

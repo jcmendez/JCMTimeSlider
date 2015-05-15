@@ -40,7 +40,7 @@ class JCMTimeSliderUtilsTests1: XCTestCase {
     let tsu = JCMTimeSliderUtils()
     
     // Create an empty data source
-    var testDataSource = TimeSliderTestDataSource(data: [NSDate]())
+    var testDataSource = TimeSliderTestDataSource(data: [JCMTimeSliderControlDataPoint]())
 
     override func setUp() {
         super.setUp()

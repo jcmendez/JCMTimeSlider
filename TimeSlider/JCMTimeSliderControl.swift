@@ -34,12 +34,29 @@ import QuartzCore
 let kLocaleLongDateFormatSwift              = NSLocalizedString("MM/dd/yy",comment: "Long date format : MM/dd/yy in english")
 
 /**
+*  Defines a data point returned by JCMTimeSliderControlDataSource
+*
+*/
+public struct JCMTimeSliderControlDataPoint {
+    public let date: NSDate
+    public let hasIcon: Bool
+    
+    //
+    //  We must define public initializer to be able to Unit Test the struct
+    //
+    public init(date: NSDate, hasIcon: Bool) {
+        self.date = date
+        self.hasIcon = hasIcon
+    }
+}
+
+/**
 *  Protocol that must be implemented by any data source for this control.  Note that the
 *  data source must guarantee that the dates are sorted ascending
 */
 public protocol JCMTimeSliderControlDataSource {
     func numberOfDates() -> Int
-    func dateAtIndex(index: Int) -> NSDate
+    func dataPointAtIndex(index: Int) -> JCMTimeSliderControlDataPoint
 }
 
 @objc protocol JCMTimeSliderControlDelegate {
@@ -208,7 +225,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
     */
     func closeLater() {
         if let lsi = lastSelectedIndex {
-            let date = dataSource!.dateAtIndex(lsi)
+            let date = dataSource!.dataPointAtIndex(lsi).date
             delegate?.selectedDate?(date, index:lastSelectedIndex!, control:self)
         }
         
@@ -242,7 +259,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
         }
         if let lsi = lastSelectedIndex {
             let linearSlope = earliest!.slopeTo(latest!)
-            let midDate = dataSource!.dateAtIndex(lsi)
+            let midDate = dataSource!.dataPointAtIndex(lsi).date
             breakPoints[.Selected] = earliest!.projectTime(midDate.timeIntervalSinceReferenceDate, slope: linearSlope)
             breakPoints[.Selected]!.index = lsi
             if shouldUseTimeExpansion {
@@ -257,8 +274,8 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
                 let firstDistortedOffset = max(mid!.y - linearExpansionStep * CGFloat(lsi - firstDistortedIndex), breakPoints[.Earliest]!.y)
                 let lastDistortedOffset = min(mid!.y - linearExpansionStep * CGFloat (lsi - lastDistortedIndex),breakPoints[.Latest]!.y)
                 //println(firstDistortedIndex, lastDistortedIndex, firstDistortedOffset, lastDistortedOffset)
-                breakPoints[.FirstDistorted] = TimeMappingPoint(ti: dataSource!.dateAtIndex(firstDistortedIndex).timeIntervalSinceReferenceDate, y: firstDistortedOffset, index: firstDistortedIndex)
-                breakPoints[.LastDistorted] = TimeMappingPoint(ti: dataSource!.dateAtIndex(lastDistortedIndex).timeIntervalSinceReferenceDate, y: lastDistortedOffset, index: lastDistortedIndex)
+                breakPoints[.FirstDistorted] = TimeMappingPoint(ti: dataSource!.dataPointAtIndex(firstDistortedIndex).date.timeIntervalSinceReferenceDate, y: firstDistortedOffset, index: firstDistortedIndex)
+                breakPoints[.LastDistorted] = TimeMappingPoint(ti: dataSource!.dataPointAtIndex(lastDistortedIndex).date.timeIntervalSinceReferenceDate, y: lastDistortedOffset, index: lastDistortedIndex)
             }
         }
     }
@@ -347,7 +364,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
         // Prepare the snapping animation to the selected date
         let point = touch.locationInView(self)
         
-        let snapPointY = distortedYOffsetFrom(dataSource!.dateAtIndex(lastSelectedIndex!), index: lastSelectedIndex!)
+        let snapPointY = distortedYOffsetFrom(dataSource!.dataPointAtIndex(lastSelectedIndex!).date, index: lastSelectedIndex!)
         if let sublayers = ticksLayer?.sublayers {
             let t = sublayers[lastSelectedIndex!] as! CAShapeLayer
             let labels = labelsLayer!.sublayers as! [CATextLayer]
@@ -360,7 +377,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
             isSnapping = true
             
             if let lsi = lastSelectedIndex {
-                let date = dataSource!.dateAtIndex(lsi)
+                let date = dataSource!.dataPointAtIndex(lsi).date
                 delegate?.selectedDate?(date, index:lastSelectedIndex!, control:self)
             }
             
@@ -558,7 +575,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
                 tick.lineWidth = 1.0
                 tick.transform = CATransform3DIdentity
                 
-                var offset = distortedYOffsetFrom(dataSource!.dateAtIndex(i), index: i)
+                var offset = distortedYOffsetFrom(dataSource!.dataPointAtIndex(i).date, index: i)
                 switch indexToKind(i) {
                 case .LinearMiddle:
                     if (offset < breakPoints[.Earliest]!.y) ||
@@ -582,7 +599,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
                     let label = labelsLayer?.sublayers[JCMTimeSliderUtils.BreakPoint.Earliest.rawValue] as! CATextLayer
                     label.position = CGPoint(x: 0, y: offset + fontOffset)
                     label.opacity = 1.0
-                    let date = dataSource!.dateAtIndex(i)
+                    let date = dataSource!.dataPointAtIndex(i).date
                     label.string = JCMTimeSliderControl.shortDateFormatter.stringFromDate(date)
                 }
                 
@@ -590,7 +607,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
                 if (expanded && (i == lastIndex-1) && (lastSelectedIndex != lastIndex-1)) {
                     let label = labelsLayer?.sublayers[JCMTimeSliderUtils.BreakPoint.Latest.rawValue] as! CATextLayer
                     label.position = CGPoint(x: 0, y: offset + fontOffset)
-                    let date = dataSource!.dateAtIndex(i)
+                    let date = dataSource!.dataPointAtIndex(i).date
                     label.string = JCMTimeSliderControl.shortDateFormatter.stringFromDate(date)
                     label.opacity = 1.0
                 }
@@ -611,7 +628,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
                                 let label = labelsLayer?.sublayers[JCMTimeSliderUtils.BreakPoint.Selected.rawValue] as! CATextLayer
                                 label.position = CGPoint(x: 0, y: offset + fontOffset)
                                 label.opacity = 1.0
-                                let date = dataSource!.dateAtIndex(i)
+                                let date = dataSource!.dataPointAtIndex(i).date
                                 label.string = JCMTimeSliderControl.selectedDateFormatter.stringFromDate(date)
                             }
                             
@@ -628,7 +645,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
                                 label.opacity = 0.3
                                 label.position = CGPoint(x: 0, y: offset + fontOffset)
                                 
-                                let date = dataSource!.dateAtIndex(i)
+                                let date = dataSource!.dataPointAtIndex(i).date
                                 label.string = JCMTimeSliderControl.selectedDateFormatter.stringFromDate(date)
                             }
                         }
@@ -678,8 +695,8 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
         return dates.count
     }
     
-    func dateAtIndex(index: Int) -> NSDate {
-        return dates[index]
+    func dataPointAtIndex(index: Int) -> JCMTimeSliderControlDataPoint {
+        return JCMTimeSliderControlDataPoint(date: dates[index], hasIcon: false)
     }
     
     override func prepareForInterfaceBuilder() {

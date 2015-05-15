@@ -34,19 +34,19 @@ import TimeSlider
 //
 class TimeSliderTestDataSource: JCMTimeSliderControlDataSource {
     
-    let data: [NSDate]?
+    let data: [JCMTimeSliderControlDataPoint]?
     
     func numberOfDates() -> Int {
         return data!.count
     }
     
-    init(data: [NSDate]?) {
+    init(data: [JCMTimeSliderControlDataPoint]?) {
         
         // Init data source with the data we supply (can be empty)
         self.data = data
     }
     
-    func dateAtIndex(index: Int) -> NSDate {
+    func dataPointAtIndex(index: Int) -> JCMTimeSliderControlDataPoint {
         if data!.count > 0 {
             return data![index]
         } else {
@@ -56,7 +56,7 @@ class TimeSliderTestDataSource: JCMTimeSliderControlDataSource {
             //
             
             // Return current date
-            return NSDate(timeIntervalSinceNow: 0);
+            return JCMTimeSliderControlDataPoint(date: NSDate(timeIntervalSinceNow: 0), hasIcon: false);
         }
     }
 }
