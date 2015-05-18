@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6245" systemVersion="14A379a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7702" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7701"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -31,7 +31,7 @@
                                 </connections>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="osd-Zd-Q3G" customClass="JCMTimeSliderControl" customModule="TimeSlider" customModuleProvider="target">
-                                <rect key="frame" x="458" y="40" width="36" height="520"/>
+                                <rect key="frame" x="438" y="40" width="36" height="520"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="36" id="UlG-b3-78B"/>
@@ -41,7 +41,7 @@
                                 </connections>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aBN-gp-JVf" customClass="JCMTimeSliderControl" customModule="TimeSlider" customModuleProvider="target">
-                                <rect key="frame" x="378" y="40" width="36" height="520"/>
+                                <rect key="frame" x="338" y="40" width="36" height="520"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="36" id="XKB-Ny-trD"/>
@@ -51,7 +51,7 @@
                                 </connections>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TOB-EU-jqO" customClass="JCMTimeSliderControl" customModule="TimeSlider" customModuleProvider="target">
-                                <rect key="frame" x="298" y="40" width="36" height="520"/>
+                                <rect key="frame" x="238" y="40" width="36" height="520"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="36" id="3ap-QD-Hbm"/>
@@ -63,7 +63,7 @@
                         </subviews>
                         <color key="backgroundColor" red="0.25098040699958801" green="0.50196081399917603" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstAttribute="trailingMargin" secondItem="TOB-EU-jqO" secondAttribute="trailing" constant="250" id="38N-h0-36T"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="TOB-EU-jqO" secondAttribute="trailing" constant="310" id="38N-h0-36T"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="aBN-gp-JVf" secondAttribute="bottom" constant="40" id="48d-3r-vKo"/>
                             <constraint firstAttribute="trailingMargin" secondItem="7Jb-xS-dMF" secondAttribute="trailing" constant="10" id="A8m-gX-W5S"/>
                             <constraint firstItem="7Jb-xS-dMF" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="topMargin" constant="40" id="BAe-RD-J5U"/>
@@ -75,11 +75,11 @@
                             <constraint firstItem="8Nf-l8-IOk" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="Qgs-87-9Z3"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="7Jb-xS-dMF" secondAttribute="bottom" constant="40" id="QoN-5Y-ViE"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="osd-Zd-Q3G" secondAttribute="bottom" constant="40" id="TQK-ze-7tV"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="aBN-gp-JVf" secondAttribute="trailing" constant="170" id="fvV-6M-tCi"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="aBN-gp-JVf" secondAttribute="trailing" constant="210" id="fvV-6M-tCi"/>
                             <constraint firstItem="8Nf-l8-IOk" firstAttribute="bottom" secondItem="8bC-Xf-vdC" secondAttribute="bottomMargin" id="gFa-u4-FBu"/>
                             <constraint firstAttribute="bottomMargin" secondItem="7Jb-xS-dMF" secondAttribute="bottom" constant="40" id="kvH-L0-r9i"/>
                             <constraint firstItem="7Jb-xS-dMF" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="20" id="lOb-Xd-c7J"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="osd-Zd-Q3G" secondAttribute="trailing" constant="90" id="oq3-9v-RMw"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="osd-Zd-Q3G" secondAttribute="trailing" constant="110" id="oq3-9v-RMw"/>
                             <constraint firstAttribute="trailing" secondItem="8Nf-l8-IOk" secondAttribute="trailing" id="pbV-Ko-gFX"/>
                         </constraints>
                         <variation key="default">

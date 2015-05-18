@@ -229,7 +229,7 @@ public class JCMTimeSliderUtils {
         if dataPoint.hasIcon {
             return "• \(JCMTimeSliderUtils.shortDateFormatter.stringFromDate(dataPoint.date))"
         } else {
-            return JCMTimeSliderUtils.shortDateFormatter.stringFromDate(dataPoint.date)
+            return "  \(JCMTimeSliderUtils.shortDateFormatter.stringFromDate(dataPoint.date))"
         }
     }
     public func selectedDateString(dataPoint: JCMTimeSliderControlDataPoint) -> NSString {
@@ -237,7 +237,7 @@ public class JCMTimeSliderUtils {
         if dataPoint.hasIcon {
             return "• \(JCMTimeSliderUtils.selectedDateFormatter.stringFromDate(dataPoint.date))"
         } else {
-            return JCMTimeSliderUtils.selectedDateFormatter.stringFromDate(dataPoint.date)
+            return "  \(JCMTimeSliderUtils.selectedDateFormatter.stringFromDate(dataPoint.date))"
         }
     }
 

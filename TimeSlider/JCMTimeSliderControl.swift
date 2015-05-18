@@ -123,6 +123,14 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
     /// Delegate
     var delegate: JCMTimeSliderControlDelegate?
     
+    
+    // Expanded control is wider by this factor
+    let expandedControlWidthFactor: CGFloat = 2.4
+    
+    // Offset (X) each tick for an expanded control by this many points
+    let expandedControlTickXOffset: CGFloat = 50.0
+    
+    
     /// Is in expanded form?
     var expanded: Bool {
         willSet {
@@ -135,9 +143,9 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
             if expansionChangeNeeded {
                 expansionChangeNeeded = false
                 if expanded {
-                    widthConstraint?.constant *= 2.0
+                    widthConstraint?.constant *= expandedControlWidthFactor
                 } else {
-                    widthConstraint?.constant *= 0.5
+                    widthConstraint?.constant *=  CGFloat (1 / expandedControlWidthFactor)
                 }
                 setNeedsLayout()
             }
@@ -337,6 +345,8 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
             return
         }
         
+        println("Snapping")
+        
         // Prepare the snapping animation to the selected date
         let point = touch.locationInView(self)
         
@@ -347,7 +357,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
             
             t.frame.offset(dx: 0, dy: linearExpansionStep)
             centerTick = DynamicTick(tick: t, labels:labels)
-            let snapPoint = CGPoint(x: t.frame.midX,y: snapPointY)
+            let snapPoint = CGPoint(x: t.frame.midX, y: snapPointY)
             let snap = UISnapBehavior(item: centerTick!, snapToPoint: snapPoint)
             snap.damping = 0.1
             isSnapping = true
@@ -509,7 +519,9 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
             aLabel.anchorPoint = CGPointZero
             labelsLayer!.addSublayer(aLabel)
             
-            aLabel.frame = CGRect(x: 0.0, y: 0.0, width: frame.width * 1.5, height: height)
+            // Frame has to be wide enough to fit the date string with an icon in front
+            aLabel.frame = CGRect(x: 0.0, y: 0.0, width: frame.width * 2.0, height: height)
+            
             aLabel.fontSize = UIFont.smallSystemFontSize()
             aLabel.font = font
             aLabel.opacity = 0.0
@@ -529,7 +541,9 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
         let font = UIFont.systemFontOfSize(UIFont.smallSystemFontSize())
         let fontOffset = -(font.xHeight / 2.0 - font.descender)
         let lastIndex = dataSource!.numberOfDates()
-        let labelLeadSpace: CGFloat = 3.0
+        
+        // Lead spacing between a label and a control
+        let labelLeadSpace: CGFloat = 4.0
         
         if let sublayers = ticksLayer?.sublayers {
             assert(lastIndex == sublayers.count, kNoWrongNumberOfLayersInconsistency)
@@ -610,7 +624,7 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
                         } else {
                             // Draw the accessory ticks that visually highlight the expanded range
                             if (expanded) {
-                                tick.transform = CATransform3DMakeTranslation(-2.0*CGFloat(linearExpansionRange-indexDifference), 0.0, 0.0)
+                                tick.transform = CATransform3DMakeTranslation(-2.0 * CGFloat(linearExpansionRange-indexDifference), 0.0, 0.0)
                             }
                             
                             if expanded && (indexDifference == linearExpansionRange - 1) {
@@ -625,7 +639,9 @@ class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderC
                     }
                 }
                 
-                tick.position = CGPoint(x: (expanded ? 36.0 : 0.0), y: offset)
+
+                // Defines 
+                tick.position = CGPoint(x: (expanded ? expandedControlTickXOffset : 0.0), y: offset)
                 
                 // Hide any labels out of bounds
                 for label in labelsLayer!.sublayers as! [CATextLayer] {

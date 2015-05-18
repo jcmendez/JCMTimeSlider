@@ -55,8 +55,16 @@ class SampleData: JCMTimeSliderControlDataSource {
         return data!.count
     }
     
+    var hasIcon: Bool = false;
     func dataPointAtIndex(index: Int) -> JCMTimeSliderControlDataPoint {
-        return JCMTimeSliderControlDataPoint(date: data![index], hasIcon: true)
+        
+        // Assign approx. half fof the labels to have icons
+        if index % 2 == 0 {
+            hasIcon = true
+        } else {
+            hasIcon = false
+        }
+        return JCMTimeSliderControlDataPoint(date: data![index], hasIcon: hasIcon)
     }
 }
 
