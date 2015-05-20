@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>JCMTimeSlider  Reference</title>
+    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <meta charset='utf-8'>
+    <script type="text/javascript">
+    window.jazzy = {'docset': false}
+    if (typeof window.dash != 'undefined') {
+      document.documentElement.className += ' dash'
+      window.jazzy.docset = true
+    }
+    if (navigator.userAgent.match(/xcode/i)) {
+      document.documentElement.className += ' xcode'
+      window.jazzy.docset = true
+    }
+    </script>
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/jazzy.js" defer></script>
+  </head>
+  <body id="reference" class="Swift">
+    <a title="JCMTimeSlider  Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p class="header-text"><a href="index.html">JCMTimeSlider Docs</a> (25% documented)</p>
+        <p id="header-links"><a href=""><img id="header-icon" src="img/gh.png" height="16px" width="16px" />View on GitHub</a></p>
+      </div>
+    </header>
+    <section id="valence">
+      <div class="content-wrapper">
+        <p id="hierarchial_navigation">
+        <a href="index.html" id="design_resources_link">JCMTimeSlider Reference</a>
+        <img id="carat" src="img/carat.png" height="10px" width="6px" />
+        JCMTimeSlider  Reference
+        </p>
+      </div>
+    </section>
+    <div class="content-wrapper">
+      <nav class="book-parts">
+        <ul class="nav-parts">
+          <li class="part-name tasks">
+          <a href="Classes.html">Classes</a>
+            <ul class="nav-chapters">
+              <li class="nav-chapter">
+                <a href="Classes/AppDelegate.html">AppDelegate</a>
+              </li>
+              <li class="nav-chapter">
+                <a href="Classes/JCMTimeSliderControl.html">JCMTimeSliderControl</a>
+              </li>
+              <li class="nav-chapter">
+                <a href="Classes/SampleData.html">SampleData</a>
+              </li>
+              <li class="nav-chapter">
+                <a href="Classes/ViewController.html">ViewController</a>
+              </li>
+            </ul>
+          </li>
+          <li class="part-name tasks">
+          <a href="Functions.html">Functions</a>
+            <ul class="nav-chapters">
+              <li class="nav-chapter">
+                <a href="Functions.html#/s:F10TimeSlider12cancel_delayFGSqFT6cancelSb_T__T_">cancel_delay(_:)</a>
+              </li>
+              <li class="nav-chapter">
+                <a href="Functions/delay(_:_:).html">delay(_:_:)</a>
+              </li>
+            </ul>
+          </li>
+          <li class="part-name tasks">
+          <a href="Protocols.html">Protocols</a>
+            <ul class="nav-chapters">
+              <li class="nav-chapter">
+                <a href="Protocols/JCMTimeSliderControlDataSource.html">JCMTimeSliderControlDataSource</a>
+              </li>
+              <li class="nav-chapter">
+                <a href="Protocols/JCMTimeSliderControlDelegate.html">JCMTimeSliderControlDelegate</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <div class="pixel-line"></div>
+      <div class="rubber-band-gap"></div>
+      <article class="chapter">
+      <a name="/"></a>
+        <h1 class="chapter-name">JCMTimeSlider</h1>
+        <section>
+          <section class="section">
+            <div class='readme'><a href='#jcmtimeslider' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h1 id='jcmtimeslider'>JCMTimeSlider</h1>
+<p class="para">This is an iOS control to navigate a timeline with large number of data points (dates).  Well <a href="http://jcmendez.github.io/JCMTimeSlider/docs">documented</a></p><p class="para"><img src="http://jcmendez.github.io/JCMTimeSlider/images/sample.gif" alt="JCMTimeSlider in action"></p><a href='#usage' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h1 id='usage'>Usage</h1>
+<p class="para">The code below gives an idea of what it is needed to use the control.  The regular datasource/delegate pattern is used.</p><p class="para">The data source needs to implement 2 functions: <code>numberOfDates()</code> and <code>dateAtIndex()</code>.  The latter must guarantee the dates are sorted in ascending order.</p><pre class="highlight plaintext"><code>class SampleData: JCMTimeSliderControlDataSource {
+  func numberOfDates() -&gt; Int {
+    return data!.count
+  }
+
+  func dateAtIndex(index: Int) -&gt; NSDate {
+    return data![index]
+  }
+}
+</code></pre>
+<p class="para">The delegate can optionally implement <code>hoveredOverDate</code> and <code>selectedDate</code> </p><pre class="highlight plaintext"><code>class ViewController: UIViewController, JCMTimeSliderControlDelegate {
+
+  @IBOutlet var timeControl1: JCMTimeSliderControl?
+
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    timeControl1?.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.4)
+    timeControl1?.dataSource = your_data_source
+    timeControl1?.delegate = self
+    timeControl1?.tag = 1
+  }
+
+  func hoveredOverDate(date: NSDate, index: Int, control: JCMTimeSliderControl) {
+    println("Hovered over control: \(control.tag) -&gt; Date: \(date), loc: \(index)")
+  }
+
+  func selectedDate(date: NSDate, index: Int, control: JCMTimeSliderControl) {
+    println("Selected control: \(control.tag) -&gt; Date: \(date), loc: \(index)")
+  }
+
+}
+</code></pre>
+<a href='#to_do' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h1 id='to_do'>To Do</h1>
+<p class="para">Lots of debugging required.  This is a very early implementation.  </p></div>
+          </section>
+        </section>
+        <section id="footer">
+          <p class="copyright">&copy; 2015 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2015-01-07)</p>
+          <p class="copyright">Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.0.20</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

@@ -1,0 +1,18 @@
+JCMTimeSliderControl.swift
+	public let date: NSDate
+	public let hasIcon: Bool
+	public init(date: NSDate, hasIcon: Bool)
+	func numberOfDates() -> Int
+	func dataPointAtIndex(index: Int) -> JCMTimeSliderControlDataPoint
+JCMTimeSliderUtils.swift
+	public var ti: NSTimeInterval
+	public var y: CGFloat
+	public var index: Int?
+	public init(ti: NSTimeInterval, y: CGFloat, index: Int?)
+	public func slopeTo(other: TimeMappingPoint) -> CGFloat
+	public func projectTime(new_ti: NSTimeInterval, slope: CGFloat) -> TimeMappingPoint
+	public func projectOffset(new_y: CGFloat, slope: CGFloat) -> TimeMappingPoint
+	public class JCMTimeSliderUtils
+	public init()
+	public func shortDateString(dataPoint: JCMTimeSliderControlDataPoint) -> NSString
+	public func selectedDateString(dataPoint: JCMTimeSliderControlDataPoint) -> NSString

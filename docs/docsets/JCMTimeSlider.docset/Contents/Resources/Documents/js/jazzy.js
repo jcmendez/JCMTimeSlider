@@ -1,13 +1,3 @@
-window.jazzy = {'docset': false}
-if (typeof window.dash != 'undefined') {
-  document.documentElement.className += ' dash'
-  window.jazzy.docset = true
-}
-if (navigator.userAgent.match(/xcode/i)) {
-  document.documentElement.className += ' xcode'
-  window.jazzy.docset = true
-}
-
 // On doc load, toggle the URL hash discussion if present
 $(document).ready(function() {
   if (!window.jazzy.docset) {
@@ -16,8 +6,8 @@ $(document).ready(function() {
   }
 });
 
-// On token click, toggle its discussion and animate token.marginLeft
-$(".token").click(function() {
+// On x-instance-method click, toggle its discussion and animate token.marginLeft
+$(".x-instance-method").click(function() {
   if (window.jazzy.docset) {
     return;
   }

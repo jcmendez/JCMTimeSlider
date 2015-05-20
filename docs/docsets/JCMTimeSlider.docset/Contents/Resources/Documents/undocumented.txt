@@ -1,0 +1,73 @@
+JCMTimeSliderControl.swift
+	func numberOfDates() -> Int
+	func dateAtIndex(index: Int) -> NSDate
+	@objc protocol JCMTimeSliderControlDelegate
+	optional func selectedDate(date:NSDate, index:Int, control:JCMTimeSliderControl)
+	optional func hoveredOverDate(date:NSDate, index:Int, control:JCMTimeSliderControl)
+	class JCMTimeSliderControl: UIControl, UIDynamicAnimatorDelegate, JCMTimeSliderControlDataSource
+	required init(coder aDecoder: NSCoder)
+	internal enum BreakPoint : Int
+	internal enum PointKind
+	var tick: CAShapeLayer
+	var labels: [CATextLayer]
+	var center: CGPoint
+	var bounds: CGRect
+	var transform: CGAffineTransform
+	init(tick: CAShapeLayer, labels: [CATextLayer])
+	var ti: NSTimeInterval
+	var y: CGFloat
+	var index: Int?
+	func slopeTo(other: TimeMappingPoint) -> CGFloat
+	func projectTime(new_ti: NSTimeInterval, slope: CGFloat) -> TimeMappingPoint
+	func projectOffset(new_y: CGFloat, slope: CGFloat) -> TimeMappingPoint
+	var breakPoints = Dictionary<BreakPoint,TimeMappingPoint>()
+	var dataInsets: CGSize = CGSize(width: 0.0, height: 15.0)
+	struct Static
+	static let instance: NSDateFormatter =
+	struct Static
+	static let instance: NSDateFormatter =
+	func setupSubViews()
+	override func beginTrackingWithTouch(touch: UITouch, withEvent event: UIEvent) -> Bool
+	override func continueTrackingWithTouch(touch: UITouch, withEvent event: UIEvent) -> Bool
+	override func cancelTrackingWithEvent(event: UIEvent?)
+	override func endTrackingWithTouch(touch: UITouch, withEvent event: UIEvent)
+	func firstDate() -> NSDate?
+	func lastDate() -> NSDate?
+	override func layoutSubviews()
+	func dynamicAnimatorDidPause(animator: UIDynamicAnimator)
+	func numberOfDates() -> Int
+	func dateAtIndex(index: Int) -> NSDate
+	override func prepareForInterfaceBuilder()
+JCMCancelableClosure.swift
+	func delay(time:NSTimeInterval, closure:()->()) ->  dispatch_cancelable_closure?
+	func dispatch_later(clsr:()->())
+	func cancel_delay(closure:dispatch_cancelable_closure?)
+ViewController.swift
+	class SampleData: JCMTimeSliderControlDataSource
+	var data: Array<NSDate>?
+	init(points:Int)
+	func numberOfDates() -> Int
+	func dateAtIndex(index: Int) -> NSDate
+	class ViewController: UIViewController, JCMTimeSliderControlDelegate
+	@IBOutlet var timeControl1: JCMTimeSliderControl?
+	@IBOutlet var timeControl2: JCMTimeSliderControl?
+	@IBOutlet var timeControl3: JCMTimeSliderControl?
+	@IBOutlet var timeControl4: JCMTimeSliderControl?
+	var sample1 = SampleData(points: 4)
+	var sample2 = SampleData(points: 12)
+	var sample3 = SampleData(points: 100)
+	var sample4 = SampleData(points: 800)
+	override func viewDidLoad()
+	override func didReceiveMemoryWarning()
+	func hoveredOverDate(date: NSDate, index: Int, control: JCMTimeSliderControl)
+	func selectedDate(date: NSDate, index: Int, control: JCMTimeSliderControl)
+AppDelegate.swift
+	class AppDelegate: UIResponder, UIApplicationDelegate
+	var window: UIWindow?
+	var locationManager = CLLocationManager()
+	func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool
+	func applicationWillResignActive(application: UIApplication)
+	func applicationDidEnterBackground(application: UIApplication)
+	func applicationWillEnterForeground(application: UIApplication)
+	func applicationDidBecomeActive(application: UIApplication)
+	func applicationWillTerminate(application: UIApplication)
