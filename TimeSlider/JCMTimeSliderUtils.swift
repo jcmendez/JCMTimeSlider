@@ -3,6 +3,9 @@
 //  TimeSlider
 //
 //  Created by Larry Pepchuk on 5/11/15.
+//
+//  The MIT License (MIT)
+//
 //  Copyright (c) 2015 Accenture. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,12 +34,14 @@ let DATA_SOURCE_MAX_RECORD_COUNT = 1000
 
 /**
 *  Used to map time to points and vice versa
+*
+*   NOTE: 'public' access is required for unit testing (as code runs in a separate module)
 */
 public struct TimeMappingPoint {
     
-    var ti: NSTimeInterval
-    var y: CGFloat
-    var index: Int?
+    public var ti: NSTimeInterval
+    public var y: CGFloat
+    public var index: Int?
     
     //
     //  We must define public initializer to be able to Unit Test the struct
@@ -47,6 +52,11 @@ public struct TimeMappingPoint {
         self.index = index
     }
     
+    //
+    //  Computes slope for two time mapping points.
+    //
+    //  Slope is defined as: {time interval difference} / {Y coordinates difference}
+    //
     public func slopeTo(other: TimeMappingPoint) -> CGFloat {
         
         // Make sure we don't try to divide by zero
@@ -55,16 +65,43 @@ public struct TimeMappingPoint {
             // Officially, slope is not defined here (it is a vertical line)
             return 0.0
         } else {
-            return (other.y - y)/CGFloat(other.ti - ti)
+            return (other.y - y) / CGFloat(other.ti - ti)
         }
     }
+
     
-    func projectTime(new_ti: NSTimeInterval, slope: CGFloat) -> TimeMappingPoint {
-        return TimeMappingPoint(ti:new_ti, y:slope*CGFloat(new_ti-ti)+y, index:nil)
+    //
+    //  Creates a new time mapping point using time interval and a slope.
+    //
+    //  Computes new Y coordinate as: slope * {time interval difference} + y
+    //
+    public func projectTime(new_ti: NSTimeInterval, slope: CGFloat) -> TimeMappingPoint {
+        
+        let new_y: CGFloat = slope * CGFloat(new_ti-ti) + y
+        
+        return TimeMappingPoint(ti: new_ti, y: new_y, index: nil)
     }
     
-    func projectOffset(new_y: CGFloat, slope: CGFloat) -> TimeMappingPoint {
-        return TimeMappingPoint(ti: ti+NSTimeInterval((new_y-y)/slope), y: new_y, index:nil)
+    //
+    //  Creates a new time mapping point using Y coordinate and a slope.
+    //
+    //  Computes new time interval as: ti + {Y coordinate difference} / slope
+    //
+    public func projectOffset(new_y: CGFloat, slope: CGFloat) -> TimeMappingPoint {
+        
+        let new_ti: NSTimeInterval
+        
+        // Make sure we don't try to divide by zero
+        if slope == 0 {
+            
+            // Officially, time interval is not defined here (zero slope is invalid)
+            
+            new_ti = 0 // return zero
+        } else {
+            new_ti = ti + NSTimeInterval((new_y - y) / slope)
+        }
+        
+        return TimeMappingPoint(ti: new_ti, y: new_y, index:nil)
     }
 }
 
@@ -96,12 +133,15 @@ public class JCMTimeSliderUtils {
         
         while (true) {
             var currentIndex = (lowerIndex + upperIndex)/2
-            if(dataSource!.dateAtIndex(currentIndex) == searchItem) {
+            
+            let dataPoint = dataSource!.dataPointAtIndex(currentIndex)
+            
+            if(dataPoint.date == searchItem) {
                 return currentIndex
             } else if (lowerIndex > upperIndex) {
                 return currentIndex
             } else {
-                if (dataSource!.dateAtIndex(currentIndex).compare(searchItem) == NSComparisonResult.OrderedDescending) {
+                if (dataPoint.date.compare(searchItem) == NSComparisonResult.OrderedDescending) {
                     upperIndex = currentIndex - 1
                 } else {
                     lowerIndex = currentIndex + 1
@@ -147,8 +187,8 @@ public class JCMTimeSliderUtils {
         if let ds = dataSource {
             let numDates = dataSource!.numberOfDates()
             if numDates > 2 {
-                let firstDate = dataSource!.dateAtIndex(0)
-                let lastDate = dataSource!.dateAtIndex(numDates-1)
+                let firstDate = dataSource!.dataPointAtIndex(0).date
+                let lastDate = dataSource!.dataPointAtIndex(numDates-1).date
                 let lowestCoord = dataInsets.height
                 let highestCoord = frame.height - 2.0 * dataInsets.height
                 localBreakPoints[.Earliest] = TimeMappingPoint(ti: firstDate.timeIntervalSinceReferenceDate, y: lowestCoord, index: 0)
@@ -157,6 +197,48 @@ public class JCMTimeSliderUtils {
         }
         
         return localBreakPoints
+    }
+
+    
+    /// The formatter for the short dates on the control
+    class var shortDateFormatter : NSDateFormatter {
+        struct Static {
+            static let instance: NSDateFormatter = {
+                let dateFormatter = NSDateFormatter()
+                dateFormatter.dateFormat = "MMM-yy"
+                return dateFormatter
+                }()
+        }
+        return Static.instance
+    }
+    
+    /// The formatter for the long dates
+    class var selectedDateFormatter : NSDateFormatter {
+        struct Static {
+            static let instance: NSDateFormatter = {
+                let dateFormatter = NSDateFormatter()
+                dateFormatter.dateFormat = kLocaleLongDateFormatSwift
+                return dateFormatter
+                }()
+        }
+        return Static.instance
+    }
+    
+    public func shortDateString(dataPoint: JCMTimeSliderControlDataPoint) -> NSString {
+        
+        if dataPoint.hasIcon {
+            return "• \(JCMTimeSliderUtils.shortDateFormatter.stringFromDate(dataPoint.date))"
+        } else {
+            return "  \(JCMTimeSliderUtils.shortDateFormatter.stringFromDate(dataPoint.date))"
+        }
+    }
+    public func selectedDateString(dataPoint: JCMTimeSliderControlDataPoint) -> NSString {
+        
+        if dataPoint.hasIcon {
+            return "• \(JCMTimeSliderUtils.selectedDateFormatter.stringFromDate(dataPoint.date))"
+        } else {
+            return "  \(JCMTimeSliderUtils.selectedDateFormatter.stringFromDate(dataPoint.date))"
+        }
     }
 
 }

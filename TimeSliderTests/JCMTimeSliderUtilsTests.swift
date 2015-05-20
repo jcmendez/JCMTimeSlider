@@ -3,6 +3,9 @@
 //  TimeSlider
 //
 //  Created by Larry Pepchuk on 5/11/15.
+//
+//  The MIT License (MIT)
+//
 //  Copyright (c) 2015 Accenture. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -36,7 +39,7 @@ class JCMTimeSliderUtilsTests: XCTestCase {
     let tsu = JCMTimeSliderUtils()
     
     // Create an empty data source
-    var testDataSource = TimeSliderTestDataSource(data: [NSDate]())
+    var testDataSource = TimeSliderTestDataSource(data: [JCMTimeSliderControlDataPoint]())
 
     override func setUp() {
         super.setUp()
@@ -83,7 +86,8 @@ class JCMTimeSliderUtilsTests: XCTestCase {
         let oneDayInTheFutureM10sec = currentDate.dateByAddingTimeInterval(60*60*24 - 10)
         let oneDayInTheFutureP10sec = currentDate.dateByAddingTimeInterval(60*60*24 + 10)
 
-        self.testDataSource = TimeSliderTestDataSource(data:[currentDate])
+        let currentDateDataPoint = JCMTimeSliderControlDataPoint(date: currentDate, hasIcon: false)
+        self.testDataSource = TimeSliderTestDataSource(data:[currentDateDataPoint])
         
         // ...same target date
         XCTAssertEqual(self.tsu.findNearestDate(self.testDataSource,
@@ -120,7 +124,8 @@ class JCMTimeSliderUtilsTests: XCTestCase {
         //
         NSLog("Two data source records (past, current date)")
         
-        self.testDataSource = TimeSliderTestDataSource(data:[oneDayInThePast, currentDate])
+        let oneDayInThePastDataPoint = JCMTimeSliderControlDataPoint(date: oneDayInThePast, hasIcon: false)
+        self.testDataSource = TimeSliderTestDataSource(data:[oneDayInThePastDataPoint, currentDateDataPoint])
         
         // ...target date is in the past (exact match)
         XCTAssertEqual(self.tsu.findNearestDate(self.testDataSource,
@@ -165,10 +170,11 @@ class JCMTimeSliderUtilsTests: XCTestCase {
         //
         // 3 data source records (past, current date, future date)
         //
+        let oneDayInTheFutureDataPoint = JCMTimeSliderControlDataPoint(date: oneDayInTheFuture, hasIcon: false)
         self.testDataSource = TimeSliderTestDataSource(data:[
-            oneDayInThePast,
-            currentDate,
-            oneDayInTheFuture])
+            oneDayInThePastDataPoint,
+            currentDateDataPoint,
+            oneDayInTheFutureDataPoint])
         
         // ...target date is in the past (exact match)
         XCTAssertEqual(self.tsu.findNearestDate(self.testDataSource,
@@ -250,9 +256,10 @@ class JCMTimeSliderUtilsTests: XCTestCase {
         // Exceed max allowed number of records
         
         //
-        //  NOTE: There is currently no easy way to catch an exception in Swift
-        //      the same was as in Objective-C (XCTAssertThrows(...)) so...
+        //  NOTE: There is currently no easy way to catch an exception/assert during unit testing in Swift.
+        //      In objective-C we could use XCTAssertThrows(...) but it does not exists in Swift.
         //
+        //  So...
         //      a) if we uncomment the code below, it will crash the app (thus Unit Tests cannot continue)
         //      b) if we keep it commented out, we certanly cannot check for the test condition
         //
@@ -284,16 +291,18 @@ class JCMTimeSliderUtilsTests: XCTestCase {
         //      half in the past, and half in the future
         //
         let recordCountConverted = NSTimeInterval(recordCount)
-        var testDataSourceArray = NSMutableArray()
+        
+        var testDataSourceArray:[JCMTimeSliderControlDataPoint] = []
         let startIndex: NSTimeInterval = -((recordCountConverted / 2) - 1)
         let endIndex: NSTimeInterval = startIndex + recordCountConverted
         
         let currentDate = NSDate(timeIntervalSinceNow: 0)
         for var i: NSTimeInterval = startIndex; i < endIndex; i++ {
-            testDataSourceArray.addObject(currentDate.dateByAddingTimeInterval(60*60*24*i))
+
+            let dataPoint = JCMTimeSliderControlDataPoint(date: currentDate.dateByAddingTimeInterval(60*60*24*i), hasIcon: false)
+            testDataSourceArray.append(dataPoint)
         }
-        
-        self.testDataSource = TimeSliderTestDataSource(data: testDataSourceArray as NSArray as? [NSDate])
+        self.testDataSource = TimeSliderTestDataSource(data: testDataSourceArray)
         
         XCTAssertEqual(self.testDataSource.numberOfDates(), recordCount, "Data source record count '\(self.testDataSource.numberOfDates())' should match desired record count '\(recordCount)'")
     }
@@ -313,7 +322,9 @@ class JCMTimeSliderUtilsTests: XCTestCase {
         let endIndex: NSTimeInterval = startIndex + recordCountConverted
         let currentDate = NSDate(timeIntervalSinceNow: 0)
 
-        // Test exact match
+        //
+        // Test exact and close matches
+        //
         var j = 0
         var targetDate: NSDate
         for var i: NSTimeInterval = startIndex; i < endIndex; i++ {
@@ -323,12 +334,12 @@ class JCMTimeSliderUtilsTests: XCTestCase {
             XCTAssertEqual(self.tsu.findNearestDate(self.testDataSource,
                 searchItem: targetDate), j, "Should match current index \(j)")
             
-            // Target date is shifted 10 sec in the past
+            // Target date is a close match: shifted 10 sec in the past
             targetDate = currentDate.dateByAddingTimeInterval(60*60*24*i - 10);
             XCTAssertEqual(self.tsu.findNearestDate(self.testDataSource,
                 searchItem: targetDate), j - 1 < 0 ? 0 : j - 1, "Should match previous index \(j)")
             
-            // Target date is shifted 10 sec in the future
+            // Target date is a close match: shifted 10 sec in the future
             targetDate = currentDate.dateByAddingTimeInterval(60*60*24*i + 10);
             XCTAssertEqual(self.tsu.findNearestDate(self.testDataSource,
                 searchItem: targetDate), j, "Should match current index \(j)")
