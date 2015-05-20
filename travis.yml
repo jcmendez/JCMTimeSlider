@@ -1,0 +1,4 @@
+language: objective-c
+script:
+- xcodebuild -project TimeSlider.xcodeproj -scheme TimeSlider -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO
+- xcodebuild test -project TimeSlider.xcodeproj -scheme TimeSlider -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO
